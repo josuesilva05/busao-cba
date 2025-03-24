@@ -1,0 +1,7 @@
+{
+  "name": "ionicdroid",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

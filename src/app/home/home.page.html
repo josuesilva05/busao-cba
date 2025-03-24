@@ -1,0 +1,110 @@
+
+  <div class="pt-3 px-1 bg-blue-950"> <!-- Adicionando a div com padding -->
+    <!-- Saudação -->
+    <section class="px-5">
+      <h1 class="text-2xl font-bold">Bem vindo(a),</h1>
+      <h1 class="text-2xl font-bold">Josué <span>👋</span></h1>
+    </section>
+    <!-- Seção de Informações -->
+    <section class="mt-6">
+      <ion-card class="bg-blue-600 rounded-2xl">
+        <ion-card-header>
+          <ion-card-title class="text-2xl font-semibold text-white">Live bus</ion-card-title>
+          <ion-card-subtitle class="text-white mt-1">Monitore sua linha favorita em tempo real</ion-card-subtitle>
+        </ion-card-header>
+        
+        <ion-card-content class="flex justify-end">
+          <ion-button class="bg-white text-blue-600 rounded-lg px-4 font-medium" fill="clear">
+            Começar
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </section>
+
+    <!-- Seção de Avisos -->
+    <section class="mt-6">
+      <header class="section-header">
+        <h2 class="text-xl font-medium mb-3 px-3">Tempo real</h2>
+      </header>
+    </section>
+
+    <ion-card class="line-card bg-gray-800 rounded-2xl">
+      <ion-card-content>
+        <div class="flex items-center">
+          <div class="bg-blue-400 items-center rounded-lg px-4 py-2">
+            <ion-icon name="bus" class="text-xl mr-1 text-white"></ion-icon>
+            <span class="text-lg font-semibold text-white">608</span>
+          </div>
+          <div class="ml-4 font-medium text-white">
+            barra de progresso
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>  
+
+    <!-- Seção de Linhas Recentes -->
+    <section class="mt-6">
+      <header class="section-header">
+        <h2 class="text-xl font-medium mb-3 px-3 ">Linhas recentes</h2>
+      </header>
+
+      <ion-card class="line-card bg-gray-800 rounded-2xl text-white">
+        <ion-card-content>
+          <div class="flex items-center">
+            <div class="line-badge bg-blue-400 rounded-lg px-4 py-2">
+              <ion-icon name="bus-outline" class="text-xl mr-1"></ion-icon>
+              <span class="text-lg font-semibold">608</span>
+            </div>
+            <div class="ml-4 font-medium text-white">
+              PARQUE RESIDENCIAL / CENTRO
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Paginação -->
+      <div class="pagination flex justify-center mt-4 mb-2">
+        <div *ngFor="let dot of [0,1,2,3,4]" 
+             class="w-2 h-2 rounded-full mx-1"
+             [class.bg-blue-400]="dot === 0"
+             [class.bg-gray-600]="dot !== 0">
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção de Avisos -->
+    <section class="mt-6">
+      <header class="section-header">
+        <h2 class="text-xl font-medium mb-3 px-3">Avisos</h2>
+      </header>
+
+      <!-- Card de Pontos -->
+      <ion-card class="warning-card bg-gray-800 rounded-2xl mb-4">
+        <ion-card-content>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <div class="warning-icon bg-blue-400 rounded-full p-2 mr-4">
+                <ion-icon name="information-circle-outline" class="text-2xl"></ion-icon>
+              </div>
+              <span>Existem 9 pontos perto de você</span>
+            </div>
+            <ion-button fill="clear" class="text-blue-400 font-medium">
+              Ver
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Card de Contribuição -->
+      <ion-card class="warning-card bg-gray-800 rounded-2xl mb-4">
+        <ion-card-content>
+          <div class="flex justify-between items-center">
+            <span>Ajude os desenvolvedores!</span>
+            <ion-button fill="clear" class="text-blue-400 font-medium">
+              Contribuir
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </section>
+  </div> <!-- Fechando a div com padding -->
