@@ -7,6 +7,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { NavigatorModule } from './navigator/navigator.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent,],
@@ -14,6 +15,7 @@ import { NavigatorModule } from './navigator/navigator.module';
     IonicModule.forRoot(), 
     AppRoutingModule,
     IonicModule,
+    HttpClientModule,
     NavigatorModule,
     RouterModule.forRoot([])
   ],

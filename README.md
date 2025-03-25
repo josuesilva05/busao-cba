@@ -1,2 +1,0 @@
-# ionicapp
-Batatas

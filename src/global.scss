@@ -30,6 +30,8 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
+@import "leaflet/dist/leaflet.css";
+
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
@@ -45,3 +47,8 @@
 /* Este arquivo pode ser adicionado ao global.scss */
 
 
+// Extensão para permitir rotação de marcadores
+.leaflet-marker-icon.leaflet-rotate-anchor {
+    transform: rotate(0deg) translate(0px, 0px);
+    transform-origin: 50% 50%;
+  }
