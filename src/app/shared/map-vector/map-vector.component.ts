@@ -1,36 +1,48 @@
-import { Component, Input, ViewEncapsulation, AfterViewInit, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, ViewEncapsulation, OnDestroy, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-rotatedmarker';
 import { SocketService } from 'src/app/services/socket.service';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs/operators';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
-  imports: [CommonModule],
   selector: 'app-map-vector',
   templateUrl: './map-vector.component.html',
   styleUrls: ['./map-vector.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [IonicModule, CommonModule]
 })
-export class MapVectorComponent implements OnInit, AfterViewInit, OnDestroy {
-
+export class MapVectorComponent implements OnInit, OnDestroy {
   @Input() lineId!: string;
-  showMap: boolean = true; // Controla a renderização do container
+  showMap: boolean = true;
 
   private map: L.Map | null = null;
   private busMarkers = new Map<string, L.Marker>();
   private dataSubscription: Subscription | null = null;
   private routeSubscription: Subscription | null = null;
-  socketDisconnected: boolean = false; // flag para evitar múltiplos cliques
+  private navigationSubscription: Subscription;
+  socketDisconnected: boolean = false;
 
   constructor(
     private socketService: SocketService,
     private route: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {
+    this.navigationSubscription = this.router.events.pipe(
+      filter(event => event instanceof NavigationStart)
+    ).subscribe((event: NavigationStart) => {
+      if (!event.url.includes('livebus')) {
+        this.cleanupMap();
+      }
+    });
+  }
 
   ngOnInit(): void {
+    this.initMapWrapper();
     this.routeSubscription = this.route.paramMap.subscribe(params => {
       const paramLineId = params.get('lineId');
       if (paramLineId) {
@@ -40,44 +52,25 @@ export class MapVectorComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['lineId'] && changes['lineId'].currentValue) {
-      this.lineId = changes['lineId'].currentValue;
-      this.setupSocket();
-    }
-  }
-
-  ngAfterViewInit(): void {
-    // Se o mapa já estiver inicializado, não o recria; caso contrário, cria o container
+  private initMapWrapper(): void {
     if (!this.map && this.showMap) {
-      this.initMap();
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribeAll();
-    this.clearMap();
-  }
-
-  private unsubscribeAll(): void {
-    if (this.dataSubscription) {
-      this.dataSubscription.unsubscribe();
-      this.dataSubscription = null;
-    }
-    if (this.routeSubscription) {
-      this.routeSubscription.unsubscribe();
-      this.routeSubscription = null;
+      setTimeout(() => {
+        if (!this.map) {
+          this.initMap();
+        }
+      }, 50);
     }
   }
 
   private initMap(): void {
-    // O container já foi recriado via *ngIf, então criamos o mapa normalmente
+    if (this.map) return;
+
     this.map = L.map('map', {
       center: [-15.6014, -56.0979],
       zoom: 15,
       preferCanvas: true
     });
-  
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors'
@@ -85,11 +78,15 @@ export class MapVectorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupSocket(): void {
-    if (!this.lineId) { return; }
+    if (!this.lineId) return;
+
+    this.socketService.connect()
     this.socketService.getBusLine(this.lineId);
+
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
     }
+
     this.dataSubscription = this.socketService.onData().subscribe({
       next: ({ type, data }) => this.handleSocketData(type, data),
       error: err => console.error('Socket error:', err)
@@ -114,24 +111,22 @@ export class MapVectorComponent implements OnInit, AfterViewInit, OnDestroy {
     this.clearMarkers();
     if (Array.isArray(data)) {
       data.forEach(bus => this.addOrUpdateMarker(bus));
-    } else {
-      console.error('Invalid sync data format:', data);
     }
   }
 
   private handleUpdate(busData: any): void {
     if (busData && typeof busData === 'object') {
       this.addOrUpdateMarker(busData);
-    } else {
-      console.error('Invalid update/insert data:', busData);
     }
   }
 
   private addOrUpdateMarker(bus: any): void {
-    if (!bus?.gps?.coordinates) { return; }
+    if (!bus?.gps?.coordinates) return;
+
     const [lng, lat] = bus.gps.coordinates;
     const markerId = bus.id;
     const existingMarker = this.busMarkers.get(markerId);
+
     if (existingMarker) {
       this.updateMarker(existingMarker, lat, lng, bus);
     } else {
@@ -140,7 +135,8 @@ export class MapVectorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private createMarker(id: string, lat: number, lng: number, bus: any): void {
-    if (!this.map) { return; }
+    if (!this.map) return;
+
     const marker = L.marker([lat, lng], {
       icon: this.createBusIcon(bus),
       rotationAngle: bus.orientacaoInt || 0,
@@ -148,11 +144,11 @@ export class MapVectorComponent implements OnInit, AfterViewInit, OnDestroy {
     })
       .bindPopup(this.createPopupContent(bus))
       .addTo(this.map);
+
     this.busMarkers.set(id, marker);
   }
 
   private updateMarker(marker: L.Marker, lat: number, lng: number, bus: any): void {
-    if (!this.map) { return; }
     marker.setLatLng([lat, lng]);
     marker.setRotationAngle(bus.orientacaoInt || 0);
     marker.setPopupContent(this.createPopupContent(bus));
@@ -190,28 +186,23 @@ export class MapVectorComponent implements OnInit, AfterViewInit, OnDestroy {
     this.busMarkers.clear();
   }
 
-  private clearMap(): void {
+  private cleanupMap(): void {
+    this.clearMarkers();
     if (this.map) {
-      this.clearMarkers();
       this.map.remove();
       this.map = null;
-      // Garante que o container seja removido do DOM para nova criação
-      const mapContainer = document.getElementById('map');
-      if (mapContainer) {
-        mapContainer.remove();
-      }
     }
+    this.socketService.disconnect();
   }
 
-  // Método chamado pelo botão "Voltar"
+  ngOnDestroy(): void {
+    this.cleanupMap();
+    this.navigationSubscription.unsubscribe();
+    this.routeSubscription?.unsubscribe();
+    this.dataSubscription?.unsubscribe();
+  }
+
   onBack(): void {
-    if (this.socketDisconnected) { return; }
-    this.socketDisconnected = true;
-    // Desabilita o botão (opcional via binding no template)
-    this.socketService.disconnect();
-    // Para forçar a recriação do container do mapa na próxima vez,
-    // desligamos a renderização do container e navegamos para a home.
-    this.showMap = false;
-    this.router.navigate(['']);
+    this.router.navigate(['livebus']);
   }
 }

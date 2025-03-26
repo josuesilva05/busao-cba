@@ -1,22 +1,17 @@
 <ion-tabs>
   <ion-tab-bar class="bg-grey-800" slot="bottom">
-    <ion-tab-button (click)="navigateTo('')">
+    <ion-tab-button [routerLink]="'/'">
       <ion-icon name="home"></ion-icon>
       <ion-label>Home</ion-label>
     </ion-tab-button>
-    <ion-tab-button (click)="navigateTo('livebus')">
+    <ion-tab-button (click)="goToLiveBus()">
       <ion-icon name="bus"></ion-icon>
-      <ion-label>Live bus</ion-label>
+      <ion-label>Live Bus</ion-label>
     </ion-tab-button>
-    <ion-tab-button (click)="navigateTo('map')">
-      <ion-icon name="map"></ion-icon>
-      <ion-label>Mapa</ion-label>
-    </ion-tab-button>
-    <ion-tab-button (click)="navigateTo('home')">
+    <ion-tab-button [routerLink]="'/home'">
       <ion-icon name="home"></ion-icon>
       <ion-label>Home</ion-label>
     </ion-tab-button>
-    <!-- Adicione mais botões aqui -->
   </ion-tab-bar>
 </ion-tabs>
 <router-outlet></router-outlet>

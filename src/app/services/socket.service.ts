@@ -39,11 +39,27 @@ export class SocketService {
     this.socket.connect();
   }
 
+  // Método para conectar manualmente
+  connect(): void {
+    if (!this.socket.connected) {
+      console.log('[SocketService] Connecting socket...');
+      this.socket.connect();
+    }
+  }
+
+  // Método para desconectar manualmente
+  disconnect(): void {
+    console.log('[SocketService] Disconnecting socket...');
+    if (this.socket && this.socket.connected) {
+      this.socket.disconnect();
+    }
+  }
+
   // Antes de emitir, garante que o socket esteja conectado
   getBusLine(lineId: string): void {
     if (!this.socket.connected) {
       console.log('[SocketService] Socket not connected. Reconnecting...');
-      this.socket.connect();
+      this.connect();
     }
     console.log(`[SocketService] Emitting 'bus_lines' for line ID: ${lineId}`);
     this.socket.emit('bus_lines', lineId);
@@ -66,17 +82,13 @@ export class SocketService {
           observer.error(error);
         }
       };
+
       this.socket.on('data', handler);
+
+      // Limpeza do listener ao completar a observação
       return () => {
         this.socket.off('data', handler);
       };
     });
-  }
-
-  disconnect(): void {
-    console.log('[SocketService] Disconnecting socket...');
-    if (this.socket && this.socket.connected) {
-      this.socket.disconnect();
-    }
   }
 }

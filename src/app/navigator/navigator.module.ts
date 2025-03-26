@@ -11,10 +11,8 @@ import { CommonModule } from "@angular/common";
         RouterModule
     ],
     exports: [
-        NavigatorComponent,
         RouterModule
     ],
-    declarations: [NavigatorComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 

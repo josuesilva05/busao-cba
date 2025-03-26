@@ -1,20 +1,31 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { MapStateService } from 'src/app/services/map-state.service';
+import { IonTabs, IonTabButton } from "@ionic/angular/standalone";
 import { IonicModule } from '@ionic/angular';
-import { IonTabs } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-navigator',
   templateUrl: './navigator.component.html',
   styleUrls: ['./navigator.component.scss'],
-  standalone: false,
+  imports: [
+    IonicModule,
+    RouterModule
+  ],
 })
 export class NavigatorComponent {
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mapStateService: MapStateService
+  ) { }
 
-  navigateTo(route: string) {
-    this.router.navigate([route]);
+  /**
+   * Ao clicar em "Live Bus", se houver um mapa ativo (rota registrada), navega para ele;
+   * caso contrário, navega para a seleção de linhas (/livebus).
+   */
+  goToLiveBus() {
+      this.router.navigate(['/livebus']);
+
   }
-
 }

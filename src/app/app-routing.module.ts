@@ -4,7 +4,6 @@ import { NavigatorComponent } from './navigator/navigator.component';
 import { HomePage } from './shared/home/home.page';
 import { MapVectorComponent } from './shared/map-vector/map-vector.component';
 import { LiveBusComponent } from './shared/live-bus/live-bus.component';
-import { CustomRouteReuseStrategy } from './custom-route-reuse.strategy';
 
 const routes: Routes = [
   {
@@ -25,7 +24,6 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
   providers: [
-    { provide: RouteReuseStrategy, useClass: CustomRouteReuseStrategy }
   ]
 })
 export class AppRoutingModule { }
