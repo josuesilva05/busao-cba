@@ -1,5 +1,6 @@
 import { Component, Input, ViewEncapsulation, OnDestroy, OnInit } from '@angular/core';
 import * as L from 'leaflet';
+import 'leaflet.awesome-markers';
 import 'leaflet-rotatedmarker';
 import { SocketService } from 'src/app/services/socket.service';
 import { Subscription } from 'rxjs';
@@ -14,7 +15,10 @@ import { IonicModule } from '@ionic/angular';
   styleUrls: ['./map-vector.component.scss'],
   encapsulation: ViewEncapsulation.None,
   standalone: true,
-  imports: [IonicModule, CommonModule]
+  imports: [
+    IonicModule,
+    CommonModule
+  ]
 })
 export class MapVectorComponent implements OnInit, OnDestroy {
   @Input() lineId!: string;
@@ -138,7 +142,11 @@ export class MapVectorComponent implements OnInit, OnDestroy {
     if (!this.map) return;
 
     const marker = L.marker([lat, lng], {
-      icon: this.createBusIcon(bus),
+      icon: L.AwesomeMarkers.icon({
+        icon: 'square',
+        prefix: 'fa',
+        markerColor: 'darkpurple',
+      }),
       rotationAngle: bus.orientacaoInt || 0,
       rotationOrigin: 'center'
     })
@@ -168,10 +176,10 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   private createPopupContent(bus: any): string {
     return `
       <div class="bus-popup">
-        <h3>Ônibus ${bus.prefixoVeiculo || 'N/A'}</h3>
+        <h3><strong>Carro:</strong> ${bus.prefixoVeiculo || 'N/A'}</h3>
         <p><strong>Linha:</strong> ${bus.sinotico?.nomeLinha || 'N/A'}</p>
         <p><strong>Velocidade:</strong> ${bus.velocidadeAtual ?? 0} km/h</p>
-        <p><strong>Última atualização:</strong> ${bus.dataTransmissaoS || 'N/A'}</p>
+        <p><strong>Próximo à:</strong> ${bus.pontoMaisProximo || 'N/A'}</p>
         <p><strong>Status:</strong> ${this.getStatusText(bus)}</p>
       </div>
     `;
@@ -204,5 +212,6 @@ export class MapVectorComponent implements OnInit, OnDestroy {
 
   onBack(): void {
     this.router.navigate(['livebus']);
+    this.socketService.disconnect();
   }
 }

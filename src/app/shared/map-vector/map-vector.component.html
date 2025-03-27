@@ -1,11 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Mapa</ion-title>
+    <ion-button expand="block" (click)="onBack()">Voltar</ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <!-- O container do mapa só será renderizado se showMap for true -->
-  <ion-button expand="block" (click)="onBack()">Voltar</ion-button>
   <div id="map" *ngIf="showMap" style="height: 100%;"></div>
 </ion-content>

@@ -31,14 +31,17 @@
                 "output": "./svg"
               }
             ],
-            "styles": 
+            "styles":
             [
               "src/global.scss",
               "src/theme/variables.scss",
               "node_modules/leaflet/dist/leaflet.css",
-              "node_modules/maplibre-gl/dist/maplibre-gl.css"
+              "node_modules/leaflet.awesome-markers/dist/leaflet.awesome-markers.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/leaflet/dist/leaflet.js",
+              "node_modules/leaflet.awesome-markers/dist/leaflet.awesome-markers.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -117,7 +120,8 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss", "src/theme/variables.scss"],
             "scripts": []
           },
           "configurations": {
