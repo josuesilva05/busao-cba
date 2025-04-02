@@ -3,7 +3,80 @@
   height: 100%;
 }
 
+.custom-bus-marker {
+  .marker-container {
+    @apply flex items-center justify-center rounded-full w-9 h-9 text-white font-bold text-sm relative;
+    background: theme('colors.blue.600');
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+
+    &.panic {
+      @apply bg-red-600;
+      animation: pulse 2s infinite;
+    }
+
+    &.off {
+      @apply bg-gray-500;
+    }
+
+    .bus-id {
+      @apply z-10;
+    }
+
+
+  }
+}
+
+.custom-popup {
+  .leaflet-popup-content-wrapper {
+    @apply rounded-lg shadow-lg;
+  }
+
+  .leaflet-popup-content {
+    @apply m-0 p-4;
+  }
+
+  .bus-popup {
+    h3 {
+      @apply text-lg font-bold mb-2;
+    }
+
+    p {
+      @apply mb-1 text-sm;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 #map {
   height: 100%;
   width: 100%;
+
+  .leaflet-control-attribution {
+    @apply text-xs bg-white bg-opacity-75;
+  }
+
+  .leaflet-control-zoom {
+    @apply shadow-lg rounded-lg overflow-hidden;
+
+    a {
+      @apply bg-white border-0;
+
+      &:hover {
+        @apply bg-gray-100;
+      }
+    }
+  }
 }

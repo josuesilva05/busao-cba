@@ -30,6 +30,7 @@
     "@ionic/angular": "^8.0.0",
     "@maplibre/ngx-maplibre-gl": "^19.0.0",
     "autoprefixer": "^10.4.21",
+    "chart.js": "^4.4.8",
     "ionicons": "^7.0.0",
     "leaflet": "^1.6.0",
     "leaflet-rotatedmarker": "^0.2.0",

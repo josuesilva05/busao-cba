@@ -18,52 +18,56 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class LiveBusComponent implements OnInit {
-  
+
   searchTerm: string = '';
   lineData: any[] = []; // Inicializa como um array
   lineId!: string;
   lineName!: string;
-
+  isLoading: boolean = true;
 
   private liveBusService = inject(LiveBusService);
   private router = inject(Router); // Injeta o Router
 
   ngOnInit() {
-    this.liveBusService.getLinesMenu().subscribe((data) => {
-      console.log("API Response:", data); // Verifica se os dados vêm corretamente
-  
-      this.lineData = data.map((line: any) => {
-        const parts = line.nome_linha.split(' - ');
-        return {
-          id: line.id, // Confirme que `id` está realmente presente
-          name: parts.slice(1).join(' - ').trim(),
-          prefix: parts[0],
-        };
-      });
-  
-      console.log("Processed Data:", this.lineData); // Verifica se `id` foi extraído corretamente
+    this.isLoading = true;
+    this.liveBusService.getLinesMenu().subscribe({
+      next: (data) => {
+        this.lineData = data.map((line: any) => {
+          const parts = line.nome_linha.split(' - ');
+          return {
+            id: line.id,
+            name: parts.slice(1).join(' - ').trim(),
+            prefix: parts[0],
+          };
+        });
+      },
+      error: (error) => {
+        console.error('Error fetching lines:', error);
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
     });
-    
   }
 
   // Método para navegar para outro componente
   navigateToLineDetail(lineId: string, lineName: string) {
     console.log("Navigating with ID:", lineId, "and Name:", lineName); // Debug
-  
+
     this.router.navigate(['/line-detail', lineId], {
       state: { lineName: lineName }
     });
   }
-  
-  
+
+
   filteredLines() {
     if (!this.searchTerm) {
       return this.lineData;
     }
-    return this.lineData.filter(line => 
-      line.name.toLowerCase().includes(this.searchTerm.toLowerCase()) || 
+    return this.lineData.filter(line =>
+      line.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
       line.prefix.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
-  
+
 }

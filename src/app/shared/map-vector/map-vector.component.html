@@ -1,11 +1,27 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Mapa</ion-title>
-    <ion-button expand="block" (click)="onBack()">Voltar</ion-button>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="onBack()" class="font-medium">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Voltar
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="font-bold">Mapa em Tempo Real</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <!-- O container do mapa só será renderizado se showMap for true -->
-  <div id="map" *ngIf="showMap" style="height: 100%;"></div>
+<ion-content class="map-content">
+  <div *ngIf="socketDisconnected" class="absolute top-0 z-50 w-full bg-red-500 text-white p-2 text-center">
+    Conexão perdida. Reconectando...
+  </div>
+
+  <div id="map"
+       *ngIf="showMap"
+       class="w-full h-full z-10">
+  </div>
+
+  <div *ngIf="!showMap"
+       class="flex items-center justify-center h-full">
+    <ion-spinner name="circular"></ion-spinner>
+  </div>
 </ion-content>

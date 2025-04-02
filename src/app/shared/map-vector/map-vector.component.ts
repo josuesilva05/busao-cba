@@ -3,7 +3,7 @@ import * as L from 'leaflet';
 import 'leaflet.awesome-markers';
 import 'leaflet-rotatedmarker';
 import { SocketService } from 'src/app/services/socket.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -30,6 +30,7 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   private routeSubscription: Subscription | null = null;
   private navigationSubscription: Subscription;
   socketDisconnected: boolean = false;
+  private destroyed$ = new Subject<void>();
 
   constructor(
     private socketService: SocketService,
@@ -40,61 +41,77 @@ export class MapVectorComponent implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationStart)
     ).subscribe((event: NavigationStart) => {
       if (!event.url.includes('livebus')) {
-        this.cleanupMap();
+        this.cleanupResources();
       }
     });
   }
 
   ngOnInit(): void {
-    this.initMapWrapper();
     this.routeSubscription = this.route.paramMap.subscribe(params => {
       const paramLineId = params.get('lineId');
       if (paramLineId) {
         this.lineId = paramLineId;
-        this.setupSocket();
+        this.initializeMapAndSocket();
       }
     });
   }
 
-  private initMapWrapper(): void {
-    if (!this.map && this.showMap) {
-      setTimeout(() => {
-        if (!this.map) {
-          this.initMap();
-        }
-      }, 50);
-    }
+  private initializeMapAndSocket(): void {
+    // Limpa recursos existentes
+    this.cleanupResources();
+
+    // Inicializa o mapa
+    setTimeout(() => {
+      this.initMap();
+      this.setupSocket();
+    }, 100);
   }
 
   private initMap(): void {
-    if (this.map) return;
-
     this.map = L.map('map', {
       center: [-15.6014, -56.0979],
       zoom: 15,
       preferCanvas: true
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.map);
+// Usando um tile provider mais confiável (você pode precisar de uma API key)
+   // Adiciona controles de zoom em uma posição melhor
+   L.control.zoom({
+    position: 'bottomright'
+  }).addTo(this.map);
+
+  // Usando um tile provider mais confiável (você pode precisar de uma API key)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    minZoom: 3,
+    attribution: '',
+    subdomains: 'abcd'
+  }).addTo(this.map);
+
+  // Adiciona escala
+  L.control.scale({
+    metric: true,
+    imperial: false,
+    position: 'bottomleft'
+  }).addTo(this.map);
+
   }
 
   private setupSocket(): void {
     if (!this.lineId) return;
 
-    this.socketService.connect()
+    // Conecta o socket
+    this.socketService.connect();
+
+    // Configura a subscription
+    this.dataSubscription = this.socketService.onData()
+      .subscribe({
+        next: ({ type, data }) => this.handleSocketData(type, data),
+        error: (err) => console.error('Socket error:', err)
+      });
+
+    // Solicita dados da linha
     this.socketService.getBusLine(this.lineId);
-
-    if (this.dataSubscription) {
-      this.dataSubscription.unsubscribe();
-    }
-
-    this.dataSubscription = this.socketService.onData().subscribe({
-      next: ({ type, data }) => this.handleSocketData(type, data),
-      error: err => console.error('Socket error:', err)
-    });
   }
 
   private handleSocketData(type: string, data: any): void {
@@ -141,43 +158,70 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   private createMarker(id: string, lat: number, lng: number, bus: any): void {
     if (!this.map) return;
 
+    const busIcon = L.divIcon({
+      className: 'custom-bus-marker',
+      html: `
+        <div class="marker-container ${bus.panico ? 'panic' : ''} ${bus.ignicao === 0 ? 'off' : 'on'}">
+          <span class="bus-id">${bus.prefixoVeiculo || bus.idVeiculo}</span>
+          <div class="marker-arrow"></div>
+        </div>
+      `,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
+    });
+
     const marker = L.marker([lat, lng], {
-      icon: L.AwesomeMarkers.icon({
-        icon: 'square',
-        prefix: 'fa',
-        markerColor: 'darkpurple',
-      }),
+      icon: busIcon,
       rotationAngle: bus.orientacaoInt || 0,
       rotationOrigin: 'center'
     })
-      .bindPopup(this.createPopupContent(bus))
-      .addTo(this.map);
+    .bindPopup(this.createPopupContent(bus), {
+      className: 'custom-popup',
+      maxWidth: 300,
+      autoPan: true
+    })
+    .addTo(this.map);
 
     this.busMarkers.set(id, marker);
   }
 
   private updateMarker(marker: L.Marker, lat: number, lng: number, bus: any): void {
-    marker.setLatLng([lat, lng]);
+    const newPosition = new L.LatLng(lat, lng);
+    const oldPosition = marker.getLatLng();
+
+    // Animação suave da movimentação
+    this.animateMarkerMovement(marker, oldPosition, newPosition, 500);
     marker.setRotationAngle(bus.orientacaoInt || 0);
     marker.setPopupContent(this.createPopupContent(bus));
-    marker.setIcon(this.createBusIcon(bus));
   }
 
-  private createBusIcon(bus: any): L.DivIcon {
-    const color = bus.panico ? 'red' : (bus.ignicao === 0 ? 'gray' : 'blue');
-    return L.divIcon({
-      html: `<div class="bus-icon" style="background: ${color}">${bus.prefixoVeiculo || bus.idVeiculo}</div>`,
-      className: 'bus-marker',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    });
+  private animateMarkerMovement(marker: L.Marker, start: L.LatLng, end: L.LatLng, duration: number): void {
+    const frames = 60;
+    const timeStep = duration / frames;
+    let step = 0;
+
+    const animate = () => {
+      step++;
+
+      const p = step / frames;
+      const lat = start.lat + (end.lat - start.lat) * p;
+      const lng = start.lng + (end.lng - start.lng) * p;
+
+      marker.setLatLng([lat, lng]);
+
+      if (step < frames) {
+        setTimeout(animate, timeStep);
+      }
+    };
+
+    animate();
   }
 
   private createPopupContent(bus: any): string {
     return `
       <div class="bus-popup">
         <h3><strong>Carro:</strong> ${bus.prefixoVeiculo || 'N/A'}</h3>
-        <p><strong>Linha:</strong> ${bus.sinotico?.nomeLinha || 'N/A'}</p>
+        <p><strong>Sentido:</strong> ${bus.sinotico.nomeTrajeto}</p>
         <p><strong>Velocidade:</strong> ${bus.velocidadeAtual ?? 0} km/h</p>
         <p><strong>Próximo à:</strong> ${bus.pontoMaisProximo || 'N/A'}</p>
         <p><strong>Status:</strong> ${this.getStatusText(bus)}</p>
@@ -194,24 +238,33 @@ export class MapVectorComponent implements OnInit, OnDestroy {
     this.busMarkers.clear();
   }
 
-  private cleanupMap(): void {
+  private cleanupResources(): void {
+    // Limpa markers
     this.clearMarkers();
+
+    // Remove mapa
     if (this.map) {
       this.map.remove();
       this.map = null;
     }
-    this.socketService.disconnect();
-  }
 
-  ngOnDestroy(): void {
-    this.cleanupMap();
-    this.navigationSubscription.unsubscribe();
-    this.routeSubscription?.unsubscribe();
-    this.dataSubscription?.unsubscribe();
+    // Cancela subscriptions
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+      this.dataSubscription = null;
+    }
   }
 
   onBack(): void {
-    this.router.navigate(['livebus']);
     this.socketService.disconnect();
+    this.cleanupResources();
+    this.router.navigate(['livebus']);
+  }
+
+  ngOnDestroy(): void {
+    this.socketService.disconnect();
+    this.cleanupResources();
+    this.navigationSubscription?.unsubscribe();
+    this.routeSubscription?.unsubscribe();
   }
 }
