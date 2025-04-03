@@ -8,6 +8,7 @@ import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { IonicModule } from '@ionic/angular';
+import { HomePageService } from 'src/app/services/home-page.service';
 
 @Component({
   selector: 'app-map-vector',
@@ -31,11 +32,13 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   private navigationSubscription: Subscription;
   socketDisconnected: boolean = false;
   private destroyed$ = new Subject<void>();
+  private polylines: L.Polyline[] = [];
 
   constructor(
     private socketService: SocketService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private homePageService: HomePageService
   ) {
     this.navigationSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationStart)
@@ -64,6 +67,7 @@ export class MapVectorComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.initMap();
       this.setupSocket();
+      this.loadPolylines();
     }, 100);
   }
 
@@ -158,10 +162,13 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   private createMarker(id: string, lat: number, lng: number, bus: any): void {
     if (!this.map) return;
 
+    const direction = (bus.sinotico?.sentidoTrajeto || '').toLowerCase();
+    const directionClass = direction === 'ida' ? 'direction-ida' : 'direction-volta';
+
     const busIcon = L.divIcon({
       className: 'custom-bus-marker',
       html: `
-        <div class="marker-container ${bus.panico ? 'panic' : ''} ${bus.ignicao === 0 ? 'off' : 'on'}">
+        <div class="marker-container ${bus.ignicao === 0 ? 'off' : 'on'} ${directionClass}">
           <span class="bus-id">${bus.prefixoVeiculo || bus.idVeiculo}</span>
           <div class="marker-arrow"></div>
         </div>
@@ -238,8 +245,60 @@ export class MapVectorComponent implements OnInit, OnDestroy {
     this.busMarkers.clear();
   }
 
+  private loadPolylines(): void {
+    if (!this.lineId || !this.map) return;
+
+    const lineIds = this.lineId.split(',');
+
+    this.homePageService.getPolylinesForMultipleLines(lineIds).subscribe({
+      next: (polylines) => {
+        this.clearPolylines();
+
+        polylines.forEach((polyline: any) => {
+          if (polyline.way && polyline.way.type === 'LineString') {
+            const wayCoordinates = polyline.way.coordinates.map(
+              (coord: number[]) => [coord[1], coord[0]]
+            );
+
+            const way = L.polyline(wayCoordinates, {
+              color: polyline.sentido === 'ida' ? 'red' : 'blue',
+              weight: 3,
+              opacity: 0.7
+            }).addTo(this.map!);
+
+            this.polylines.push(way);
+          }
+        });
+
+        this.fitMapToBounds();
+      },
+      error: (err) => console.error('Error loading polylines:', err)
+    });
+  }
+
+  private fitMapToBounds(): void {
+    if (!this.map || this.polylines.length === 0) return;
+
+    // Cria um bounds que inclui todas as polylines
+    const bounds = L.latLngBounds([]);
+    this.polylines.forEach(polyline => {
+      bounds.extend(polyline.getBounds());
+    });
+
+    // Ajusta o mapa para mostrar todas as polylines com um pequeno padding
+    this.map.fitBounds(bounds, {
+      padding: [50, 50],
+      maxZoom: 15
+    });
+  }
+
+  private clearPolylines(): void {
+    this.polylines.forEach(polyline => polyline.remove());
+    this.polylines = [];
+  }
+
   private cleanupResources(): void {
-    // Limpa markers
+    this.clearPolylines();
     this.clearMarkers();
 
     // Remove mapa

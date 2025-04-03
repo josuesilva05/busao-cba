@@ -1,8 +1,10 @@
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
 import { IonicModule, Platform } from '@ionic/angular';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
+import { HttpClient } from '@angular/common/http';
+import { Geolocation } from '@capacitor/geolocation';
 
 interface Bus {
   number: string;
@@ -21,6 +23,19 @@ interface SystemAlert {
   icon: string;
 }
 
+interface BusStopResponse {
+  total: number;
+  pontos: Array<{
+    _id: string;
+    id: number;
+    name: string;
+    latLng: {
+      lat: number;
+      lng: number;
+    };
+  }>;
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -31,7 +46,7 @@ interface SystemAlert {
     IonicModule
   ],
 })
-export class HomePage implements AfterViewInit {
+export class HomePage implements AfterViewInit, OnInit {
   @ViewChild('busOccupancyChart') private chartRef!: ElementRef;
   private chart!: Chart;
 
@@ -45,11 +60,7 @@ export class HomePage implements AfterViewInit {
   activeRoutes: number = 42;
   avgTime: number = 12;
 
-  nearbyStops: BusStop[] = [
-    { name: 'Terminal Central', distance: 150, status: 'Normal' },
-    { name: 'Praça Principal', distance: 300, status: 'Lotado' },
-    { name: 'Shopping', distance: 450, status: 'Normal' }
-  ];
+  nearbyStops: BusStop[] = [];
 
   systemAlerts: SystemAlert[] = [
     {
@@ -73,7 +84,10 @@ export class HomePage implements AfterViewInit {
     }]
   };
 
-  constructor(private platform: Platform) {
+  constructor(
+    private platform: Platform,
+    private http: HttpClient
+  ) {
     this.initializeApp();
     this.updateGreeting();
   }
@@ -104,6 +118,50 @@ export class HomePage implements AfterViewInit {
 
   ngAfterViewInit() {
     this.initChart();
+  }
+
+  ngOnInit() {
+    this.loadNearbyStops();
+  }
+
+  async loadNearbyStops() {
+    try {
+      const position = await Geolocation.getCurrentPosition();
+      const { latitude, longitude } = position.coords;
+
+      const radius = 300; // meters
+      const url = `http://144.22.240.151:3000/api/pontos/byLoc/${latitude}/${longitude}/${radius}/count`;
+
+      this.http.get<BusStopResponse>(url).subscribe(response => {
+        this.nearbyStops = response.pontos.map(ponto => ({
+          name: ponto.name,
+          distance: this.calculateDistance(
+            latitude,
+            longitude,
+            ponto.latLng.lat,
+            ponto.latLng.lng
+          ),
+          status: 'Normal'
+        }));
+      });
+    } catch (error) {
+      console.error('Error fetching nearby stops:', error);
+    }
+  }
+
+  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371e3; // Earth's radius in meters
+    const φ1 = lat1 * Math.PI/180;
+    const φ2 = lat2 * Math.PI/180;
+    const Δφ = (lat2-lat1) * Math.PI/180;
+    const Δλ = (lon2-lon1) * Math.PI/180;
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return Math.round(R * c); // Distance in meters
   }
 
   private initChart() {

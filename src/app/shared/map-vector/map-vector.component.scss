@@ -6,10 +6,17 @@
 .custom-bus-marker {
   .marker-container {
     @apply flex items-center justify-center rounded-full w-9 h-9 text-white font-bold text-sm relative;
-    background: theme('colors.blue.600');
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     transition: all 0.3s ease;
+
+    &.direction-ida {
+      @apply bg-red-600;
+    }
+
+    &.direction-volta {
+      @apply bg-blue-600;
+    }
 
     &.panic {
       @apply bg-red-600;
@@ -23,8 +30,6 @@
     .bus-id {
       @apply z-10;
     }
-
-
   }
 }
 

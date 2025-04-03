@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Observable } from 'rxjs';
 
@@ -8,7 +9,7 @@ import { Observable } from 'rxjs';
 export class SocketService {
   private socket!: Socket;
   private readonly url = 'http://144.22.240.151:3000';
-
+  private httpClient = inject(HttpClient);
   constructor() {}
 
   connect(): void {
@@ -39,6 +40,10 @@ export class SocketService {
       this.socket.connect();
     }
     this.socket.emit('bus_lines', lineId);
+  }
+
+  getPolylines(lineId: string): Observable<any> {
+    return this.httpClient.get(`${this.url}/api/map/polylines/${lineId}`);
   }
 
   onData(): Observable<{ type: string, data: any }> {
