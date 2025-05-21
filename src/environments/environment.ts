@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  api: 'http://144.22.240.151:3000',
+  api: 'http://137.131.229.1:3000/',
 };
 
 /*

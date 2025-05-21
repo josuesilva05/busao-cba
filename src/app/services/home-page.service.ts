@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HomePageService {
-  private readonly API_URL = 'http://144.22.240.151:3000/api';
+  private readonly API_URL = 'http://http://137.131.229.1:3000/api';
 
   constructor(private http: HttpClient) {}
 

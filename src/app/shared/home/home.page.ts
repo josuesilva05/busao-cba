@@ -130,7 +130,7 @@ export class HomePage implements AfterViewInit, OnInit {
       const { latitude, longitude } = position.coords;
 
       const radius = 300; // meters
-      const url = `http://144.22.240.151:3000/api/pontos/byLoc/${latitude}/${longitude}/${radius}/count`;
+      const url = `http://137.131.192.41:3000/api/pontos/byLoc/${latitude}/${longitude}/${radius}/count`;
 
       this.http.get<BusStopResponse>(url).subscribe(response => {
         this.nearbyStops = response.pontos.map(ponto => ({

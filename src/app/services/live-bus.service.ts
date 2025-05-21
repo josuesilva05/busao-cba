@@ -11,6 +11,6 @@ export class LiveBusService {
   constructor(private http: HttpClient) {}
 
   getLinesMenu(): Observable<Lines[]> {
-    return this.http.get<Lines[]>(`${environment.api}/api/pontos/linhasapp`);
+    return this.http.get<Lines[]>(`http://137.131.229.1:3000/api/linha/listAll`);
   }
 }

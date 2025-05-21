@@ -4,6 +4,7 @@ import { NavigatorComponent } from './navigator/navigator.component';
 import { HomePage } from './shared/home/home.page';
 import { MapVectorComponent } from './shared/map-vector/map-vector.component';
 import { LiveBusComponent } from './shared/live-bus/live-bus.component';
+import { ItnerariosComponent } from './shared/itnerarios/itnerarios.component';
 
 const routes: Routes = [
   {
@@ -12,7 +13,8 @@ const routes: Routes = [
     children: [
       { path: '', component: HomePage },
       { path: 'line-detail/:lineId', component: MapVectorComponent },
-      { path: 'livebus', component: LiveBusComponent }
+      { path: 'livebus', component: LiveBusComponent },
+      { path: 'itnerarios', component: ItnerariosComponent }
       // Outras rotas, se necessário.
     ]
   }
