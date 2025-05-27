@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HomePageService {
-  private readonly API_URL = 'http://http://137.131.229.1:3000/api';
+  private readonly API_URL = `${environment.api}`;
 
   constructor(private http: HttpClient) {}
 

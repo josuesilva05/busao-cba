@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,6 @@ export class ItinerariosService {
     constructor(private http: HttpClient) { }
 
     getItnerarios(line_id: string) {
-        return this.http.get(`http://137.131.229.1:3000/api/linha/${line_id}/horarios`);
+        return this.http.get(`${environment.api}/itnerarios/${line_id}`);
     }
 }

@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class SocketService {
   private socket!: Socket;
-  private readonly url = 'http://137.131.229.1:3000';
+  private readonly url = 'http://140.238.187.108:3000';
   private httpClient = inject(HttpClient);
   constructor() {}
 

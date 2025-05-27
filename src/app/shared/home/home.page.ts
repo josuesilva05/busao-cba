@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
 import { HttpClient } from '@angular/common/http';
 import { Geolocation } from '@capacitor/geolocation';
+import { environment } from 'src/environments/environment';
 
 interface Bus {
   number: string;
@@ -130,7 +131,7 @@ export class HomePage implements AfterViewInit, OnInit {
       const { latitude, longitude } = position.coords;
 
       const radius = 300; // meters
-      const url = `http://137.131.192.41:3000/api/pontos/byLoc/${latitude}/${longitude}/${radius}/count`;
+      const url = `${environment.api}/pontos/byLoc/${latitude}/${longitude}/${radius}/count`;
 
       this.http.get<BusStopResponse>(url).subscribe(response => {
         this.nearbyStops = response.pontos.map(ponto => ({
