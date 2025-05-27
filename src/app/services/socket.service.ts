@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
   private socket!: Socket;
-  private readonly url = 'http://140.238.187.108:3000';
   private httpClient = inject(HttpClient);
   constructor() {}
 
@@ -18,11 +18,14 @@ export class SocketService {
       this.socket.close();
     }
 
-    this.socket = io(this.url, {
+    this.socket = io(`ws://${environment.socket}`, {
       transports: ['websocket'],
       reconnectionAttempts: 3,
       reconnectionDelay: 2000,
-      autoConnect: false
+      autoConnect: false,
+      forceNew: true,
+      secure: false,
+      rejectUnauthorized: false
     });
 
     this.socket.connect();
@@ -43,7 +46,7 @@ export class SocketService {
   }
 
   getPolylines(lineId: string): Observable<any> {
-    return this.httpClient.get(`${this.url}/api/map/polylines/${lineId}`);
+    return this.httpClient.get(`http://${environment.socket}/api/map/polylines/${lineId}`);
   }
 
   onData(): Observable<{ type: string, data: any }> {
