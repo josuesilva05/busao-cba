@@ -12,7 +12,7 @@
               {{ linhaSelecionada ? 'Horários' : 'Consultar Horários' }}
             </h1>
             <p class="text-blue-200 dark:text-gray-400 text-sm" *ngIf="linhaSelecionada">
-              {{ linhaSelecionada?.nome_linha }}
+              {{ linhaSelecionada.nome_linha }}
             </p>
           </div>
         </div>
@@ -90,7 +90,7 @@
           >
             <div class="flex items-center justify-center space-x-2">
               <ion-icon name="arrow-forward" class="text-lg"></ion-icon>
-              <span>Ida ({{ horarios?.ida?.length || 0 }} horários)</span>
+              <span>Ida ({{ horarios.ida.length || 0 }} horários)</span>
             </div>
           </button>
           <button 
@@ -100,7 +100,7 @@
           >
             <div class="flex items-center justify-center space-x-2">
               <ion-icon name="arrow-back" class="text-lg"></ion-icon>
-              <span>Volta ({{ horarios?.volta?.length || 0 }} horários)</span>
+              <span>Volta ({{ horarios.volta.length || 0 }} horários)</span>
             </div>
           </button>
         </div>
@@ -112,7 +112,7 @@
           <div>
             <p class="text-green-100 text-sm">Próximo Horário</p>
             <p class="text-2xl font-bold">
-              {{ getNextDeparture(selectedDirection === 'ida' ? (horarios?.ida || []) : (horarios?.volta || [])) || 'Sem mais horários hoje' }}
+              {{ getNextDeparture(selectedDirection === 'ida' ? (horarios.ida || []) : (horarios.volta || [])) || 'Sem mais horários hoje' }}
             </p>
           </div>
           <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -130,9 +130,9 @@
         
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           <div 
-            *ngFor="let horario of selectedDirection === 'ida' ? (horarios?.ida || []) : (horarios?.volta || []); trackBy: trackByHorario"
+            *ngFor="let horario of selectedDirection === 'ida' ? (horarios.ida || []) : (horarios.volta || []); trackBy: trackByHorario"
             [class]="'p-3 rounded-xl text-center transition-all duration-300 cursor-pointer transform hover:scale-105 ' + 
-                     (isNextDeparture(horario, selectedDirection === 'ida' ? (horarios?.ida || []) : (horarios?.volta || [])) ? 
+                     (isNextDeparture(horario, selectedDirection === 'ida' ? (horarios.ida || []) : (horarios.volta || [])) ? 
                       'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg ring-2 ring-green-300' : 
                       'bg-blue-50 dark:bg-gray-700 text-blue-900 dark:text-white hover:bg-blue-100 dark:hover:bg-gray-600')"
           >
@@ -145,7 +145,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="text-center">
               <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {{ (selectedDirection === 'ida' ? (horarios?.ida?.length || 0) : (horarios?.volta?.length || 0)) }}
+                {{ (selectedDirection === 'ida' ? (horarios.ida.length || 0) : (horarios.volta.length || 0)) }}
               </p>
               <p class="text-sm text-gray-600 dark:text-gray-400">Total de Horários</p>
             </div>
