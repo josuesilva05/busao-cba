@@ -1,0 +1,161 @@
+<ion-content class="safe-area bg-gray-50 dark:bg-gray-900">
+  <div class="safe-gap">
+    <!-- Header -->
+    <div class="px-4 py-3 bg-white dark:bg-gray-800 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <ion-button fill="clear" size="small" [routerLink]="['/home']">
+            <ion-icon name="arrow-back" class="text-xl"></ion-icon>
+          </ion-button>
+          <div>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Pontos de Ônibus</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-300" *ngIf="totalPontos > 0">
+              {{ totalPontos }} pontos encontrados
+            </p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <!-- Refresh Button -->
+          <ion-button fill="clear" size="small" (click)="refreshLocation()" [disabled]="isLoading">
+            <ion-icon name="refresh" class="text-xl" [class.animate-spin]="isLoading"></ion-icon>
+          </ion-button>
+          
+          <!-- Settings Button -->
+          <ion-button fill="clear" size="small" id="radius-trigger">
+            <ion-icon name="settings" class="text-xl"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="px-4 py-2 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-2 h-2 rounded-full" 
+               [class.bg-green-500]="currentLocation" 
+               [class.bg-red-500]="!currentLocation"></div>
+          <span class="text-sm text-gray-600 dark:text-gray-300">
+            {{ currentLocation ? 'Localização ativa' : 'Localizando...' }}
+          </span>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <ion-icon name="radio-button-on" class="text-blue-500 text-sm"></ion-icon>
+          <span class="text-sm text-gray-600 dark:text-gray-300">{{ searchRadius }}m</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div class="relative flex-1 bg-white dark:bg-gray-800">
+      <div #mapContainer class="w-full h-96 relative z-10"></div>
+      
+      <!-- Loading Overlay -->
+      <div *ngIf="isLoading" class="absolute inset-0 bg-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 flex items-center justify-center z-20">
+        <div class="text-center">
+          <ion-spinner name="circular" class="w-8 h-8 text-blue-500 mb-2"></ion-spinner>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Carregando pontos...</p>
+        </div>
+      </div>
+
+      <!-- Map Controls -->
+      <div class="absolute top-4 left-4 z-30 space-y-2">
+        <!-- Location Button -->
+        <button 
+          (click)="getCurrentLocation()" 
+          class="w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          [disabled]="isLoading">
+          <ion-icon name="locate" class="text-blue-500 text-lg"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Map Legend -->
+      <div class="absolute bottom-4 left-4 z-30">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 max-w-xs">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Legenda</h3>
+          <div class="space-y-2">
+            <div class="flex items-center space-x-2">
+              <div class="user-marker-small"></div>
+              <span class="text-xs text-gray-600 dark:text-gray-300">Sua localização</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <div class="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                <ion-icon name="bus" class="text-white text-xs"></ion-icon>
+              </div>
+              <span class="text-xs text-gray-600 dark:text-gray-300">Pontos de ônibus</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pontos List -->
+    <div class="px-4 py-4 bg-white dark:bg-gray-800">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pontos Próximos</h3>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{ pontos.length }} de {{ totalPontos }}</span>
+      </div>
+
+      <div class="space-y-3 max-h-64 overflow-y-auto">
+        <div 
+          *ngFor="let ponto of pontos; let i = index" 
+          class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+          
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <ion-icon name="bus" class="text-white text-lg"></ion-icon>
+          </div>
+          
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ ponto.name }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">ID: {{ ponto.id }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              {{ ponto.latLng.lat.toFixed(6) }}, {{ ponto.latLng.lng.toFixed(6) }}
+            </p>
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            <button 
+              class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+              (click)="$event.stopPropagation()">
+              <ion-icon name="location" class="text-blue-600 dark:text-blue-400 text-sm"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="pontos.length === 0 && !isLoading" class="text-center py-8">
+          <ion-icon name="location-outline" class="text-gray-400 text-4xl mb-3"></ion-icon>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">Nenhum ponto encontrado</p>
+          <p class="text-gray-400 dark:text-gray-500 text-xs mt-1">Tente aumentar o raio de busca</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Radius Popover -->
+  <ion-popover trigger="radius-trigger" placement="bottom-end">
+    <ng-template>
+      <ion-content class="popover-content">
+        <div class="p-4">
+          <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Raio de Busca</h4>
+          <div class="space-y-2">
+            <button 
+              *ngFor="let radius of [250, 500, 1000, 2000]"
+              (click)="changeRadius(radius)"
+              class="w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              [class.bg-blue-100]="searchRadius === radius"
+              [class.dark:bg-blue-900]="searchRadius === radius">
+              <span class="text-sm" 
+                    [class.text-blue-600]="searchRadius === radius"
+                    [class.dark:text-blue-400]="searchRadius === radius">
+                {{ radius }}m
+              </span>
+            </button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+</ion-content>

@@ -1,0 +1,107 @@
+// Estilos personalizados para a tela de login
+.safe-area {
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-gap {
+  padding-top: var(--safe-area-top);
+}
+
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top), 24px);
+}
+
+// Animações personalizadas
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+// Aplicar animação aos elementos
+.space-y-6 > * {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.space-y-6 > *:nth-child(1) { animation-delay: 0.1s; }
+.space-y-6 > *:nth-child(2) { animation-delay: 0.2s; }
+.space-y-6 > *:nth-child(3) { animation-delay: 0.3s; }
+.space-y-6 > *:nth-child(4) { animation-delay: 0.4s; }
+
+// Efeito de foco nos inputs
+input:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
+}
+
+// Efeito hover nos botões sociais
+button:hover {
+  transform: translateY(-1px);
+}
+
+// Efeito de loading (pode ser usado futuramente)
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+// Responsividade adicional
+@media (max-height: 600px) {
+  .space-y-6 {
+    gap: 1rem;
+  }
+  
+  .py-4 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
+// Efeitos de glassmorphism para dark mode
+@media (prefers-color-scheme: dark) {
+  .bg-white {
+    backdrop-filter: blur(10px);
+    background-color: rgba(31, 41, 55, 0.8);
+  }
+}
+
+// Animação do logo
+.w-20.h-20 {
+  animation: pulse 2s infinite;
+}
+
+// Customização do checkbox
+input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-6.647 6.646-3.061-3.061a.5.5 0 0 0-.708.708l3.415 3.414a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.707-.707z'/%3e%3c/svg%3e");
+}

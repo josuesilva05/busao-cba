@@ -1,99 +1,76 @@
-<div class="bg-gray-900 min-h-screen p-4 flex flex-col relative">
+<ion-content fullscreen class="safe-area">
+  <ion-fab
+    *ngIf="selectedLines.length > 0"
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+  >
+    <ion-fab-button
+      class="fab-button cancel-button"
+      (click)="clearSelection()"
+      color="danger"
+    >
+      <ion-icon name="close"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button
+      class="fab-button confirm-button mt-2 mb-2"
+      (click)="navigateWithSelectedLines()"
+    >
+      <ion-icon name="arrow-forward"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
-  <input type="text" [(ngModel)]="searchTerm" placeholder="Busque sua linha..."
-         class="p-2 mb-6 rounded-lg bg-gray-800 text-white w-full border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-  <div class="overflow-y-auto flex-grow"
-       (scroll)="onScroll($event)">
-    <div class="flex flex-col gap-3">
-      <div class="flex items-center bg-gray-800 rounded-lg shadow-lg p-3 w-full cursor-pointer"
-           *ngFor="let line of filteredLines()"
-           (click)="navigateToLineDetail(line.id, line.name)"
-           [class.selected-card]="isSelected(line.id)"
-           (touchstart)="onTouchStart($event, line.id, line.name)"
-           (touchmove)="onTouchMove($event)"
-           (touchend)="onTouchEnd()"
-           (mousedown)="onMouseDown($event, line.id, line.name)"
-           (mouseup)="onMouseUp()"
-           (mouseleave)="onMouseUp()">
-
-        <div class="flex items-center" [class.hidden]="!showCheckboxes">
-          <ion-checkbox
-            (click)="toggleLineSelection($event, line.id, line.name)"
-            [checked]="isSelected(line.id)"
-            class="mr-3">
-          </ion-checkbox>
+  <div class="safe-gap">
+    <div class="relative mb-6 rounded-xl py-2 search-container">
+      <div class="px-2">
+        <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl p-4 flex items-center space-x-3">
+          <ion-icon
+            name="search"
+            class="text-gray-500 dark:text-gray-400 text-xl"
+          ></ion-icon>
+          <input
+            #searchInput
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Buscar linhas..."
+            class="bg-transparent outline-none text-gray-900 dark:text-white text-base w-full"
+          />
         </div>
+      </div>
+    </div>
 
-        <div class="flex items-center bg-blue-500 text-white rounded-md px-3 py-2 mr-3">
-          <ion-icon name="bus" class="mr-2"></ion-icon>
-          <span class="font-bold">{{ line.prefix }}</span>
-        </div>
+    <div class="overflow-y-auto flex-grow" (scroll)="onScroll($event)">
+      <div class="flex flex-col gap-3 px-2">
+        <div
+          class="flex items-center bg-gray-800 rounded-2xl shadow-lg p-3 w-full cursor-pointer"
+          *ngFor="let line of filteredLines()"
+          (click)="navigateToLineDetail(line.id, line.name)"
+          [class.selected-card]="isSelected(line.id)"
+          (touchstart)="onTouchStart($event, line.id, line.name)"
+          (touchmove)="onTouchMove($event)"
+          (touchend)="onTouchEnd()"
+          (mousedown)="onMouseDown($event, line.id, line.name)"
+          (mouseup)="onMouseUp()"
+          (mouseleave)="onMouseUp()"
+        >
+          <div class="flex items-center" [class.hidden]="!showCheckboxes">
+            <ion-checkbox
+              (click)="toggleLineSelection($event, line.id, line.name)"
+              [checked]="isSelected(line.id)"
+              class="mr-3"
+            ></ion-checkbox>
+          </div>
 
-        <div class="text-white text-base font-semibold truncate w-full">
-          {{ line.name }}
+          <div class="flex items-center bg-blue-500 text-white rounded-md px-3 py-2 mr-3">
+            <ion-icon name="bus" class="mr-2"></ion-icon>
+            <span class="font-bold">{{ line.prefix }}</span>
+          </div>
+
+          <div class="text-white text-base font-semibold truncate w-full">
+            {{ line.name }}
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Grupo de botões flutuantes -->
-  <div class="fab-container" *ngIf="selectedLines.length > 0">
-    <ion-fab-button class="fab-button cancel-button" (click)="clearSelection()" color="danger">
-      <ion-icon name="close"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button class="fab-button confirm-button" (click)="navigateWithSelectedLines()">
-      <ion-icon name="arrow-forward"></ion-icon>
-    </ion-fab-button>
-  </div>
-</div>
-
-<style>
-  .shadow-lg {
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2), 0px 2px 5px rgba(0, 0, 0, 0.1);
-  }
-
-  .overflow-y-auto {
-    max-height: 80vh;
-  }
-
-  .selected-card {
-    border: 2px solid #3b82f6;
-    background-color: rgba(59, 130, 246, 0.1);
-  }
-
-  ion-checkbox {
-    --size: 20px;
-    --checkbox-background-checked: #3b82f6;
-  }
-
-  ion-fab {
-    margin-bottom: 20px;
-    margin-right: 20px;
-  }
-
-  ion-fab-button {
-    --background: #3b82f6;
-  }
-
-  .fab-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    z-index: 1000;
-  }
-
-  .fab-button {
-    --size: 56px;
-  }
-
-  .cancel-button {
-    --background: #ef4444;
-  }
-
-  .confirm-button {
-    --background: #3b82f6;
-  }
-</style>
+</ion-content>

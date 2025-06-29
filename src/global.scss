@@ -69,3 +69,16 @@ html, body {
   transform: rotate(0deg) translate(0px, 0px);
   transform-origin: 50% 50%;
 }
+
+.safe-area {
+    /* garante que o fundo da safe-area seja igual ao do ion-content */
+    background-color: var(--ion-background-color);
+    /* 2px extra ao padding seguro para criar espaçamento interno */
+    padding-top: calc(env(safe-area-inset-top) + 10px);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 2px);
+}
+
+/* espaçamento de 2px entre a safe-area e o conteúdo interno */
+.safe-gap {
+    padding: 12px;
+}

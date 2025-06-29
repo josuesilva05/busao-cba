@@ -1,0 +1,97 @@
+// Estilos personalizados para notificações
+.safe-area {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-gap {
+  padding-top: max(env(safe-area-inset-top), 16px);
+}
+
+// Animações para notificações
+.notification-item {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Efeito de pulso para indicadores de não lidas
+.pulse-dot {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+// Efeito hover personalizado
+.notification-card:hover {
+  transform: translateY(-2px);
+  transition: all 0.2s ease-out;
+}
+
+// Estilos para filtros de categoria
+.filter-pill {
+  transition: all 0.2s ease-out;
+}
+
+.filter-pill:hover {
+  transform: scale(1.05);
+}
+
+// Scrollbar personalizada para filtros
+.filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+// Gradiente sutil para separação de seções
+.section-divider {
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  height: 1px;
+  margin: 1rem 0;
+}
+
+// Animação para o botão de limpar
+.clear-button {
+  transition: all 0.3s ease-out;
+}
+
+.clear-button:hover {
+  transform: scale(1.02);
+}
+
+// Efeito para bordas coloridas das notificações
+.border-status {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-status::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}

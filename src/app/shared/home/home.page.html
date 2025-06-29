@@ -8,10 +8,10 @@
           <h1 class="text-blue-900 dark:text-white text-2xl font-bold">Josué Silva</h1>
         </div>
         <div class="flex space-x-3">
-          <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md ">
+          <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md " [routerLink]="['/notifications']">
             <ion-icon name="notifications" class="text-blue-600 dark:text-white text-xl"></ion-icon>
           </div>
-          <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md">
+          <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md" [routerLink]="['/profile']">
             <ion-icon name="person" class="text-blue-600 dark:text-white text-xl"></ion-icon>
           </div>
         </div>
@@ -26,7 +26,7 @@
 
           <!-- Campo de busca -->
           <div class="relative mb-6 px-2">
-            <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl p-4 flex items-center space-x-3">
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl p-4 flex items-center space-x-3 cursor-pointer" [routerLink]="['/livebus']" [queryParams]="{ focus: 'search' }">
               <ion-icon name="search" class="text-gray-500 dark:text-gray-400 text-xl"></ion-icon>
               <span class="text-gray-500 dark:text-gray-400 text-base">Buscar linhas...</span>
             </div>
@@ -93,7 +93,7 @@
           </div>
 
           <!-- Pontos -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-col items-center justify-center aspect-square shadow-lg border border-blue-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-col items-center justify-center aspect-square shadow-lg border border-blue-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300" [routerLink]="['/pontos']">
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-3 shadow-md">
               <ion-icon name="location" class="text-white text-2xl"></ion-icon>
             </div>

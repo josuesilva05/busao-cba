@@ -1,0 +1,181 @@
+<ion-content class="safe-area bg-blue-50 dark:bg-gray-800">
+  <div class="safe-gap">
+    <!-- Header com foto do perfil -->
+    <div class="relative">
+      <!-- Background gradient -->
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 h-40 rounded-b-3xl"></div>
+      
+      <!-- Foto do perfil -->
+      <div class="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
+        <div class="relative">
+          <div class="w-32 h-32 bg-white dark:bg-gray-800 rounded-full p-1 shadow-xl">
+            <div class="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+              <ion-icon name="person" class="text-white text-5xl"></ion-icon>
+            </div>
+          </div>
+          <!-- Badge de status online -->
+          <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white dark:border-gray-800"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informações básicas do usuário -->
+    <div class="pt-20 px-4 text-center">
+      <h1 class="text-2xl font-bold text-blue-900 dark:text-white mb-2">Josué Silva</h1>
+      <p class="text-blue-600 dark:text-blue-400 mb-1">josue.silva&#64;email.com</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Usuário desde 2023</p>
+    </div>
+
+    <!-- Menu de opções -->
+    <div class="px-4 mt-8 space-y-4">
+      <!-- Informações pessoais -->
+      <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-blue-100 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Informações pessoais</h3>
+        </div>
+        
+        <div class="space-y-1">
+          <!-- Editar perfil -->
+          <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <ion-icon name="person-outline" class="text-blue-600 dark:text-blue-400 text-lg"></ion-icon>
+              </div>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-white">Editar perfil</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Alterar dados pessoais</p>
+              </div>
+            </div>
+            <ion-icon name="chevron-forward" class="text-gray-400 dark:text-gray-500"></ion-icon>
+          </div>
+
+          <!-- Alterar senha -->
+          <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                <ion-icon name="lock-closed-outline" class="text-red-600 dark:text-red-400 text-lg"></ion-icon>
+              </div>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-white">Alterar senha</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Segurança da conta</p>
+              </div>
+            </div>
+            <ion-icon name="chevron-forward" class="text-gray-400 dark:text-gray-500"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferências -->
+      <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-blue-100 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Preferências</h3>
+        </div>
+        
+        <div class="space-y-1">
+          <!-- Notificações -->
+          <div class="flex items-center justify-between px-6 py-4 transition-colors">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
+                <ion-icon name="notifications-outline" class="text-yellow-600 dark:text-yellow-400 text-lg"></ion-icon>
+              </div>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-white">Notificações</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Receber alertas do app</p>
+              </div>
+            </div>
+            <ion-toggle color="primary" [checked]="notificationsEnabled" (ionChange)="onNotificationToggle($event)"></ion-toggle>
+          </div>
+
+          <!-- Tema -->
+          <div class="flex items-center justify-between px-6 py-4 transition-colors">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                <ion-icon name="color-palette-outline" class="text-purple-600 dark:text-purple-400 text-lg"></ion-icon>
+              </div>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-white">Modo escuro</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Alternar tema do app</p>
+              </div>
+            </div>
+            <ion-toggle color="secondary" [checked]="darkModeEnabled" (ionChange)="onDarkModeToggle($event)"></ion-toggle>
+          </div>
+
+          <!-- Localização -->
+          <div class="flex items-center justify-between px-6 py-4 transition-colors">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                <ion-icon name="location-outline" class="text-green-600 dark:text-green-400 text-lg"></ion-icon>
+              </div>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-white">Localização</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Permitir acesso à localização</p>
+              </div>
+            </div>
+            <ion-toggle color="success" [checked]="locationEnabled" (ionChange)="onLocationToggle($event)"></ion-toggle>
+          </div>
+
+          <!-- Notificações de chegada -->
+          <div class="flex items-center justify-between px-6 py-4 transition-colors">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <ion-icon name="alarm-outline" class="text-blue-600 dark:text-blue-400 text-lg"></ion-icon>
+              </div>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-white">Alertas de chegada</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Notificar quando o ônibus estiver próximo</p>
+              </div>
+            </div>
+            <ion-toggle color="tertiary" [checked]="arrivalAlertsEnabled" (ionChange)="onArrivalAlertsToggle($event)"></ion-toggle>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Suporte e outros -->
+      <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-blue-100 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Suporte</h3>
+        </div>
+        
+        <div class="space-y-1">
+          <!-- Ajuda -->
+          <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                <ion-icon name="help-circle-outline" class="text-orange-600 dark:text-orange-400 text-lg"></ion-icon>
+              </div>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-white">Ajuda</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">FAQ e suporte</p>
+              </div>
+            </div>
+            <ion-icon name="chevron-forward" class="text-gray-400 dark:text-gray-500"></ion-icon>
+          </div>
+
+          <!-- Sobre -->
+          <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                <ion-icon name="information-circle-outline" class="text-gray-600 dark:text-gray-400 text-lg"></ion-icon>
+              </div>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-white">Sobre o app</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Versão 1.0.0</p>
+              </div>
+            </div>
+            <ion-icon name="chevron-forward" class="text-gray-400 dark:text-gray-500"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botão de logout -->
+      <div class="pb-8">
+        <button (click)="confirmLogout()" class="logout-button w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-3xl shadow-lg transition-all duration-300 flex items-center justify-center space-x-3">
+          <ion-icon name="log-out-outline" class="text-xl"></ion-icon>
+          <span>Sair da conta</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>

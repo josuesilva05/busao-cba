@@ -1,0 +1,25 @@
+// Estilos customizados para o searchbar de buscar linhas
+.busca-linhas {
+  --background: transparent;
+  --bar-background: #374151; // fundo do input
+  --border-radius: 12px;
+  --color: #f9fafb; // cor do texto
+  --placeholder-color: #d1d5db; // cor do placeholder
+  --icon-color: #d1d5db; // cor dos ícones
+  --min-height: 44px;
+  width: 100%;
+}
+
+
+// Fixar busca no topo dentro do conteúdo
+.search-container {
+  position: sticky;
+  //top: calc(env(safe-area-inset-top) + 10px); // Adiciona margem superior
+  top: calc(env(safe-area-inset-top)); // Adiciona margem superior
+  z-index: 20;
+  backdrop-filter: blur(10px);
+
+  // efeito de fade nas bordas do blur
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+}

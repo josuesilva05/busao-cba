@@ -1,0 +1,240 @@
+// Import Leaflet styles
+@import '~leaflet/dist/leaflet.css';
+
+// Map container styles
+#map {
+  height: 400px;
+  width: 100%;
+  z-index: 1;
+}
+
+// Custom marker styles for user location
+.user-location-marker {
+  background: transparent;
+  border: none;
+}
+
+.user-marker {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.user-marker-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #3b82f6;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.user-marker-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+// Small user marker for legend
+.user-marker-small {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  display: inline-block;
+}
+
+.user-marker-small::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #3b82f6;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.user-marker-small::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background: rgba(59, 130, 246, 0.2);
+  border-radius: 50%;
+}
+
+// Custom marker styles for pontos
+.ponto-marker {
+  background: transparent;
+  border: none;
+}
+
+.ponto-marker-container {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+
+.ponto-marker-icon {
+  width: 24px;
+  height: 24px;
+  background: #3b82f6;
+  border: 3px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  ion-icon {
+    color: white;
+    font-size: 14px;
+  }
+}
+
+// Popup styles
+.ponto-popup {
+  font-family: system-ui, -apple-system, sans-serif;
+  
+  strong {
+    color: #1f2937;
+    font-size: 14px;
+  }
+  
+  small {
+    color: #6b7280;
+    font-size: 12px;
+  }
+}
+
+// Dark mode styles
+@media (prefers-color-scheme: dark) {
+  .ponto-popup strong {
+    color: #f9fafb;
+  }
+  
+  .ponto-popup small {
+    color: #9ca3af;
+  }
+}
+
+// Loading animation
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .user-marker {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .user-marker-inner {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .user-marker-pulse {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .ponto-marker-container {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .ponto-marker-icon {
+    width: 20px;
+    height: 20px;
+    
+    ion-icon {
+      font-size: 12px;
+    }
+  }
+}
+
+// Popover content styles
+.popover-content {
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-dark);
+}
+
+// Safe area adjustments
+.safe-area {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-gap {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+// Custom scrollbar for pontos list
+.pontos-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pontos-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pontos-list::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 2px;
+}
+
+.pontos-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+// Hover effects
+.hover-scale {
+  transition: transform 0.2s ease-in-out;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}

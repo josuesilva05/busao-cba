@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { LiveBusService } from 'src/app/services/live-bus.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { StatusBar } from '@capacitor/status-bar';
 
 @Component({
   imports: [
@@ -17,7 +18,13 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./live-bus.component.scss'],
 })
 
-export class LiveBusComponent implements OnInit {
+export class LiveBusComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+
+  private route = inject(ActivatedRoute);
+  private liveBusService = inject(LiveBusService);
+  private router = inject(Router); // Injeta o Router
 
   searchTerm: string = '';
   lineData: any[] = []; // Inicializa como um array
@@ -32,8 +39,10 @@ export class LiveBusComponent implements OnInit {
   private touchStartY: number = 0;
   private readonly SCROLL_THRESHOLD = 10; // pixels de movimento para considerar como scroll
 
-  private liveBusService = inject(LiveBusService);
-  private router = inject(Router); // Injeta o Router
+    constructor() {
+    // garante que o conteúdo seja empurrado para baixo da statusbar
+    StatusBar.setOverlaysWebView({ overlay: false });
+  }
 
   ngOnInit() {
     this.isLoading = true;
@@ -53,6 +62,14 @@ export class LiveBusComponent implements OnInit {
       },
       complete: () => {
         this.isLoading = false;
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['focus'] === 'search' && this.searchInput) {
+        setTimeout(() => this.searchInput.nativeElement.focus());
       }
     });
   }
