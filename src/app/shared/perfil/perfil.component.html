@@ -21,46 +21,114 @@
 
     <!-- Informações básicas do usuário -->
     <div class="pt-20 px-4 text-center">
-      <h1 class="text-2xl font-bold text-blue-900 dark:text-white mb-2">Josué Silva</h1>
-      <p class="text-blue-600 dark:text-blue-400 mb-1">josue.silva&#64;email.com</p>
-      <p class="text-sm text-gray-500 dark:text-gray-400">Usuário desde 2023</p>
+      <div *ngIf="userProfile; else loadingProfile">
+        <h1 class="text-2xl font-bold text-blue-900 dark:text-white mb-2">
+          {{ userProfile.name }}
+        </h1>
+        <p class="text-blue-600 dark:text-blue-400 mb-1">{{ userProfile.email }}</p>
+        <div class="flex items-center justify-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+          <span>Membro desde {{ userProfile.createdAt | date:'dd/MM/yyyy' }}</span>
+          <div *ngIf="userProfile.emailVerified" class="flex items-center space-x-1 text-green-600 dark:text-green-400">
+            <ion-icon name="checkmark-circle" class="text-sm"></ion-icon>
+            <span>Verificado</span>
+          </div>
+        </div>
+      </div>
+      <ng-template #loadingProfile>
+        <h1 class="text-2xl font-bold text-blue-900 dark:text-white mb-2">Carregando...</h1>
+      </ng-template>
     </div>
 
     <!-- Menu de opções -->
     <div class="px-4 mt-8 space-y-4">
       <!-- Informações pessoais -->
       <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-blue-100 dark:border-gray-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
           <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Informações pessoais</h3>
+          <button 
+            *ngIf="!editMode" 
+            (click)="enableEditMode()"
+            class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+          >
+            <ion-icon name="create" class="text-lg"></ion-icon>
+          </button>
         </div>
         
-        <div class="space-y-1">
-          <!-- Editar perfil -->
-          <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+        <div *ngIf="!editMode" class="space-y-1">
+          <!-- Nome -->
+          <div class="flex items-center justify-between px-6 py-4">
             <div class="flex items-center space-x-4">
               <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                <ion-icon name="person-outline" class="text-blue-600 dark:text-blue-400 text-lg"></ion-icon>
+                <ion-icon name="person" class="text-blue-600 dark:text-blue-400"></ion-icon>
               </div>
               <div>
-                <p class="font-medium text-blue-900 dark:text-white">Editar perfil</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Alterar dados pessoais</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Nome</p>
+                <p class="text-blue-900 dark:text-white font-medium">{{ userProfile?.name || 'Não informado' }}</p>
               </div>
             </div>
-            <ion-icon name="chevron-forward" class="text-gray-400 dark:text-gray-500"></ion-icon>
+          </div>
+          
+          <!-- Email -->
+          <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                <ion-icon name="mail" class="text-green-600 dark:text-green-400"></ion-icon>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                <p class="text-blue-900 dark:text-white font-medium">{{ userProfile?.email || 'Não informado' }}</p>
+              </div>
+            </div>
+            <div *ngIf="userProfile?.emailVerified" class="text-green-600 dark:text-green-400">
+              <ion-icon name="checkmark-circle"></ion-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modo de edição -->
+        <div *ngIf="editMode" class="p-6 space-y-4">
+          <!-- Campo Nome -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nome</label>
+            <input 
+              type="text" 
+              [(ngModel)]="editData.name"
+              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 text-gray-800 dark:text-white"
+              placeholder="Digite seu nome"
+            />
           </div>
 
-          <!-- Alterar senha -->
-          <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <div class="flex items-center space-x-4">
-              <div class="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-                <ion-icon name="lock-closed-outline" class="text-red-600 dark:text-red-400 text-lg"></ion-icon>
+          <!-- Campo Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+            <input 
+              type="email" 
+              [(ngModel)]="editData.email"
+              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 text-gray-800 dark:text-white"
+              placeholder="Digite seu email"
+            />
+          </div>
+
+          <!-- Botões de ação -->
+          <div class="flex space-x-3 pt-4">
+            <button 
+              (click)="saveProfile()"
+              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200"
+            >
+              <div class="flex items-center justify-center space-x-2">
+                <ion-icon name="checkmark"></ion-icon>
+                <span>Salvar</span>
               </div>
-              <div>
-                <p class="font-medium text-blue-900 dark:text-white">Alterar senha</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Segurança da conta</p>
+            </button>
+            <button 
+              (click)="cancelEdit()"
+              class="flex-1 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-xl transition-all duration-200"
+            >
+              <div class="flex items-center justify-center space-x-2">
+                <ion-icon name="close"></ion-icon>
+                <span>Cancelar</span>
               </div>
-            </div>
-            <ion-icon name="chevron-forward" class="text-gray-400 dark:text-gray-500"></ion-icon>
+            </button>
           </div>
         </div>
       </div>

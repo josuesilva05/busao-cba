@@ -4,8 +4,8 @@ import type { CapacitorConfig } from '@capacitor/cli';
 // Isso é necessário para desenvolvimento, mas deve ser evitado em produção
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'ionicdroid',
+  appId: 'com.josu.busaocba',
+  appName: 'Busão CBA',
   webDir: 'www',
   server: {
     cleartext: true

@@ -1,0 +1,135 @@
+<ion-content class="safe-area bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 relative overflow-hidden">
+  <!-- Background decorativo -->
+  <div class="absolute inset-0 opacity-10 dark:opacity-5">
+    <div class="absolute -top-24 -right-24 w-48 h-48 bg-blue-500 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-32 -left-32 w-64 h-64 bg-indigo-500 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="safe-gap min-h-full flex flex-col justify-center relative z-10">
+    <!-- Container principal -->
+    <div class="px-6 py-4">
+      <!-- Header com logo e título -->
+      <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Esqueceu a Senha?</h1>
+        <p class="text-gray-600 dark:text-gray-300 text-base text-center px-4">
+          Não se preocupe! Digite seu email e enviaremos um link para redefinir sua senha.
+        </p>
+      </div>
+
+      <!-- Conteúdo condicional -->
+      <div *ngIf="!emailSent">
+        <!-- Formulário de recuperação -->
+        <form class="space-y-6" (ngSubmit)="onSubmit()" #forgotForm="ngForm">
+          <!-- Campo de email -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Email</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <ion-icon name="mail" class="text-gray-400 dark:text-gray-500 text-lg"></ion-icon>
+              </div>
+              <input 
+                type="email" 
+                placeholder="Digite seu email cadastrado"
+                class="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                [(ngModel)]="email"
+                name="email"
+                required
+                #emailInput="ngModel"
+              />
+            </div>
+            <!-- Validação -->
+            <div *ngIf="emailInput.invalid && emailInput.touched" class="text-red-500 text-sm ml-1">
+              Por favor, digite um email válido
+            </div>
+          </div>
+
+          <!-- Botão de enviar -->
+          <button 
+            type="submit" 
+            class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            [disabled]="!forgotForm.valid || isLoading"
+          >
+            <div class="flex items-center justify-center space-x-2">
+              <ion-spinner *ngIf="isLoading" name="crescent" class="w-5 h-5"></ion-spinner>
+              <span class="text-lg" *ngIf="!isLoading">Enviar Link de Recuperação</span>
+              <span class="text-lg" *ngIf="isLoading">Enviando...</span>
+              <ion-icon name="send" class="text-lg" *ngIf="!isLoading"></ion-icon>
+            </div>
+          </button>
+        </form>
+      </div>
+
+      <!-- Tela de confirmação -->
+      <div *ngIf="emailSent" class="text-center space-y-6">
+        <!-- Ícone de sucesso -->
+        <div class="w-24 h-24 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6">
+          <ion-icon name="checkmark-circle" class="text-green-600 dark:text-green-400 text-4xl"></ion-icon>
+        </div>
+
+        <!-- Mensagem de sucesso -->
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Email Enviado!</h2>
+          <p class="text-gray-600 dark:text-gray-300 px-4">
+            Enviamos um link de recuperação para <strong class="text-blue-600 dark:text-blue-400">{{email}}</strong>
+          </p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 px-4">
+            Verifique sua caixa de entrada e spam. O link expira em 30 minutos.
+          </p>
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="space-y-4">
+          <button 
+            class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+            (click)="goToLogin()"
+          >
+            <div class="flex items-center justify-center space-x-2">
+              <span class="text-lg">Voltar ao Login</span>
+              <ion-icon name="arrow-back" class="text-lg"></ion-icon>
+            </div>
+          </button>
+
+          <button 
+            class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold py-4 px-6 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg"
+            (click)="resendEmail()"
+          >
+            <div class="flex items-center justify-center space-x-2">
+              <span class="text-lg">Reenviar Email</span>
+              <ion-icon name="refresh" class="text-lg"></ion-icon>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="mt-6 text-center" *ngIf="!emailSent">
+        <p class="text-gray-600 dark:text-gray-400">
+          Lembrou da sua senha? 
+          <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold ml-1" (click)="goToLogin()">
+            Voltar ao Login
+          </button>
+        </p>
+      </div>
+
+      <!-- Informações de ajuda -->
+      <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4" *ngIf="!emailSent">
+        <div class="flex items-start space-x-3">
+          <ion-icon name="information-circle" class="text-blue-600 dark:text-blue-400 text-xl mt-0.5 flex-shrink-0"></ion-icon>
+          <div class="text-sm text-blue-800 dark:text-blue-300">
+            <p class="font-semibold mb-1">Dicas de Segurança:</p>
+            <ul class="space-y-1 text-blue-700 dark:text-blue-400">
+              <li>• Verifique sua caixa de spam se não encontrar o email</li>
+              <li>• O link expira em 30 minutos por segurança</li>
+              <li>• Use uma senha forte com pelo menos 8 caracteres</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Versão -->
+      <div class="mt-4 text-center">
+        <p class="text-xs text-gray-400 dark:text-gray-500">Versão 1.0.0</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

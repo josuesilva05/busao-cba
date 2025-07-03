@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ import { environment } from 'src/environments/environment';
 export class SocketService {
   private socket!: Socket;
   private httpClient = inject(HttpClient);
+  private authService = inject(AuthService);
   constructor() {}
 
   connect(): void {
@@ -18,6 +20,10 @@ export class SocketService {
       this.socket.close();
     }
 
+    // Obter o user_id do Firebase para incluir na conexão
+    const currentUser = this.authService.getCurrentUser();
+    const userId = currentUser?.uid;
+
     this.socket = io(`ws://${environment.socket}`, {
       transports: ['websocket'],
       reconnectionAttempts: 3,
@@ -25,7 +31,13 @@ export class SocketService {
       autoConnect: false,
       forceNew: true,
       secure: false,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      auth: userId ? {
+        id: userId
+      } : {},
+      query: userId ? {
+        id: userId
+      } : {}
     });
 
     this.socket.connect();
@@ -42,6 +54,8 @@ export class SocketService {
     if (this.socket && !this.socket.connected) {
       this.socket.connect();
     }
+    
+    // Enviar apenas o lineId, o user_id já foi enviado no header da conexão
     this.socket.emit('bus_lines', lineId);
   }
 

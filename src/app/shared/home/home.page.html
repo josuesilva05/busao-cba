@@ -4,8 +4,8 @@
     <div class="px-2 pb-2 relative z-10 pt-safe">
       <div class="flex justify-between items-start mb-4">
         <div>
-          <p class="text-blue-600 dark:text-blue-400 text-base mb-1">Bom dia,</p>
-          <h1 class="text-blue-900 dark:text-white text-2xl font-bold">Josué Silva</h1>
+          <p class="text-blue-600 dark:text-blue-400 text-base mb-1">{{ greeting }},</p>
+          <h1 class="text-blue-900 dark:text-white text-2xl font-bold">{{ displayName }}</h1>
         </div>
         <div class="flex space-x-3">
           <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md " [routerLink]="['/notifications']">

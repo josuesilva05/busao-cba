@@ -1,14 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { Component, OnInit, inject } from '@angular/core';
+import { IonicModule, AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { AuthService } from '../../services/auth.service';
+import { UserService, UserProfile } from '../../services/user.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-perfil',
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss'],
   standalone: true,
-  imports: [IonicModule]
+  imports: [IonicModule, CommonModule, FormsModule]
 })
 export class PerfilComponent  implements OnInit {
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+  private alertController = inject(AlertController);
+  private loadingCtrl = inject(LoadingController);
+  private toastCtrl = inject(ToastController);
+  
+  currentUser$ = this.authService.currentUser$;
+  userProfile$ = this.userService.userProfile$;
+  
+  userProfile: UserProfile | null = null;
+  editMode = false;
+  
+  // Dados para edição
+  editData = {
+    name: '',
+    email: ''
+  };
 
   // Estados dos switches
   notificationsEnabled = true;
@@ -16,9 +37,44 @@ export class PerfilComponent  implements OnInit {
   locationEnabled = true;
   arrivalAlertsEnabled = false;
 
-  constructor(private alertController: AlertController) { }
+  constructor() { }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    // Carregar dados do usuário quando o componente inicializar
+    this.currentUser$.subscribe(async (user) => {
+      if (user && user.uid) {
+        await this.loadUserProfile(user.uid);
+      }
+    });
+    
+    // Também observar mudanças no perfil
+    this.userProfile$.subscribe(profile => {
+      this.userProfile = profile;
+      if (profile) {
+        this.editData = {
+          name: profile.name,
+          email: profile.email
+        };
+      }
+    });
+  }
+
+  async loadUserProfile(firebaseId: string) {
+    const loading = await this.loadingCtrl.create({
+      message: 'Carregando perfil...',
+      translucent: true
+    });
+    await loading.present();
+
+    try {
+      await this.userService.getUserProfile(firebaseId);
+    } catch (error) {
+      console.error('Erro ao carregar perfil:', error);
+      this.showToast('Erro ao carregar dados do perfil', 'danger');
+    } finally {
+      await loading.dismiss();
+    }
+  }
 
   // Métodos para lidar com mudanças nos switches
   onNotificationToggle(event: any) {
@@ -40,6 +96,56 @@ export class PerfilComponent  implements OnInit {
   onArrivalAlertsToggle(event: any) {
     this.arrivalAlertsEnabled = event.detail.checked;
     console.log('Alertas de chegada:', this.arrivalAlertsEnabled);
+  }
+
+  // Métodos para edição de perfil
+  enableEditMode() {
+    this.editMode = true;
+  }
+
+  cancelEdit() {
+    this.editMode = false;
+    // Restaurar dados originais
+    if (this.userProfile) {
+      this.editData = {
+        name: this.userProfile.name,
+        email: this.userProfile.email
+      };
+    }
+  }
+
+  async saveProfile() {
+    if (!this.editData.name.trim() || !this.editData.email.trim()) {
+      this.showToast('Por favor, preencha todos os campos', 'warning');
+      return;
+    }
+
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      this.showToast('Usuário não encontrado', 'danger');
+      return;
+    }
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Salvando alterações...',
+      translucent: true
+    });
+    await loading.present();
+
+    try {
+      await this.userService.updateUserProfile(user.uid, {
+        name: this.editData.name.trim(),
+        email: this.editData.email.trim()
+      });
+      
+      this.editMode = false;
+      this.showToast('Perfil atualizado com sucesso!', 'success');
+    } catch (error: any) {
+      console.error('Erro ao atualizar perfil:', error);
+      this.showToast('Erro ao salvar alterações', 'danger');
+    } finally {
+      await loading.dismiss();
+    }
   }
 
   // Método para confirmar logout
@@ -71,13 +177,31 @@ export class PerfilComponent  implements OnInit {
   }
 
   // Método para realizar o logout
-  logout() {
-    console.log('Usuário deslogado');
-    // Aqui você pode implementar a lógica de logout:
-    // - Limpar dados do usuário do storage
-    // - Redirecionar para tela de login
-    // - Limpar tokens de autenticação
-    // Exemplo: this.router.navigate(['/login']);
+  async logout() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Saindo...',
+      translucent: true
+    });
+    await loading.present();
+
+    try {
+      await this.authService.logout();
+      await loading.dismiss();
+      // O redirecionamento já é feito pelo AuthService
+    } catch (error) {
+      await loading.dismiss();
+      console.error('Erro ao fazer logout:', error);
+      this.showToast('Erro ao sair da conta', 'danger');
+    }
   }
 
+  private async showToast(message: string, color: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'top'
+    });
+    await toast.present();
+  }
 }

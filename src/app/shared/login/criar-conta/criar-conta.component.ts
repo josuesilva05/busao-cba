@@ -4,39 +4,42 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { mail, lockClosed, eye, eyeOff, arrowForward } from 'ionicons/icons';
-import { AuthService } from '../../services/auth.service';
-import { browserLocalPersistence, browserSessionPersistence, setPersistence } from '@angular/fire/auth';
+import { person, mail, lockClosed, eye, eyeOff, checkmarkCircle } from 'ionicons/icons';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  selector: 'app-criar-conta',
+  templateUrl: './criar-conta.component.html',
+  styleUrls: ['./criar-conta.component.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule]
 })
-export class LoginComponent implements OnInit {
+export class CriarContaComponent implements OnInit {
   private authService = inject(AuthService);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
 
   showPassword = false;
+  showConfirmPassword = false;
   isLoading = false;
-  rememberMe = false;
 
   formData = {
+    nome: '',
     email: '',
-    password: ''
+    telefone: '',
+    password: '',
+    confirmPassword: ''
   };
 
   constructor(private router: Router) {
     // Adicionar ícones necessários
     addIcons({
+      person,
       mail,
       lockClosed,
       eye,
       eyeOff,
-      arrowForward
+      checkmarkCircle
     });
   }
 
@@ -46,36 +49,45 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
   async onSubmit() {
-    if (!this.formData.email || !this.formData.password) {
-      this.showToast('Por favor, preencha todos os campos', 'warning');
+    // Validação básica
+    if (!this.formData.nome || !this.formData.email || !this.formData.password || !this.formData.confirmPassword) {
+      this.showToast('Por favor, preencha todos os campos obrigatórios', 'warning');
       return;
     }
 
-    // Definir persistência antes do login
-    try {
-      const auth = this.authService.getAuthInstance();
-      if (this.rememberMe) {
-        await setPersistence(auth, browserLocalPersistence);
-      } else {
-        await setPersistence(auth, browserSessionPersistence);
-      }
-    } catch (e) {
-      this.showToast('Erro ao definir persistência de sessão', 'danger');
+    if (this.formData.password !== this.formData.confirmPassword) {
+      this.showToast('As senhas não coincidem', 'warning');
+      return;
+    }
+
+    if (this.formData.password.length < 6) {
+      this.showToast('A senha deve ter pelo menos 6 caracteres', 'warning');
+      return;
+    }
+
+    // Validação de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.formData.email)) {
+      this.showToast('Por favor, digite um email válido', 'warning');
       return;
     }
 
     const loading = await this.loadingCtrl.create({
-      message: 'Entrando...',
+      message: 'Criando conta...',
       translucent: true
     });
     await loading.present();
 
     try {
       this.isLoading = true;
-      await this.authService.login(this.formData.email, this.formData.password);
+      await this.authService.register(this.formData.nome, this.formData.email, this.formData.password);
       await loading.dismiss();
-      this.showToast('Login realizado com sucesso!', 'success');
+      this.showToast('Conta criada com sucesso!', 'success');
       this.router.navigate(['/']);
     } catch (error: any) {
       await loading.dismiss();
@@ -86,19 +98,6 @@ export class LoginComponent implements OnInit {
   }
 
   async loginWithGoogle() {
-    // Definir persistência antes do login social
-    try {
-      const auth = this.authService.getAuthInstance();
-      if (this.rememberMe) {
-        await setPersistence(auth, browserLocalPersistence);
-      } else {
-        await setPersistence(auth, browserSessionPersistence);
-      }
-    } catch (e) {
-      this.showToast('Erro ao definir persistência de sessão', 'danger');
-      return;
-    }
-
     const loading = await this.loadingCtrl.create({
       message: 'Conectando com Google...',
       translucent: true
@@ -108,7 +107,7 @@ export class LoginComponent implements OnInit {
     try {
       await this.authService.loginWithGoogle();
       await loading.dismiss();
-      this.showToast('Login realizado com sucesso!', 'success');
+      this.showToast('Conta criada com sucesso!', 'success');
       this.router.navigate(['/']);
     } catch (error: any) {
       await loading.dismiss();
@@ -116,20 +115,16 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  goToSignup() {
-    this.router.navigate(['/criar-conta']);
-  }
-
-  forgotPassword() {
-    this.router.navigate(['/esqueceu-senha']);
+  goToLogin() {
+    this.router.navigate(['/login']);
   }
 
   private async showToast(message: string, color: string) {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 2000,
+      duration: 3000,
       color,
-      position: 'bottom',
+      position: 'top'
     });
     await toast.present();
   }

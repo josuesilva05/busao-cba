@@ -7,6 +7,16 @@ export const environment = {
   socket: '140.238.187.108:3000',
 };
 
+export const firebaseConfig = {
+  apiKey: "AIzaSyBPZdg-nE5QjS_pKw-xWve6fkPdMUqReqg",
+  authDomain: "busao-cba.firebaseapp.com",
+  projectId: "busao-cba",
+  storageBucket: "busao-cba.firebasestorage.app",
+  messagingSenderId: "723425439465",
+  appId: "1:723425439465:web:6d3608641a40c9846a4a78",
+  measurementId: "G-GD50RFP786"
+};
+
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

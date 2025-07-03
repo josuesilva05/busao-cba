@@ -1,0 +1,207 @@
+// Estilos específicos para criar conta
+.safe-area {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.safe-gap {
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  height: 100%;
+  overflow-y: auto;
+}
+
+// Garantir que o ion-content não seja scrollável
+ion-content {
+  --overflow: hidden;
+  height: 100vh;
+}
+
+// Animações personalizadas
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Aplicar animação ao componente inteiro
+ion-content {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+// Animação para o background decorativo
+.absolute.inset-0 {
+  animation: fadeIn 1.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.1;
+  }
+}
+
+// Animação escalonada para os elementos principais
+.text-center {
+  animation: fadeInUp 0.6s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+form {
+  animation: fadeInUp 0.6s ease-out;
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.my-6 {
+  animation: fadeInUp 0.6s ease-out;
+  animation-delay: 0.6s;
+  animation-fill-mode: both;
+}
+
+.space-y-3 {
+  animation: fadeInUp 0.6s ease-out;
+  animation-delay: 0.7s;
+  animation-fill-mode: both;
+}
+
+.mt-6 {
+  animation: fadeInUp 0.6s ease-out;
+  animation-delay: 0.8s;
+  animation-fill-mode: both;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// Efeitos de hover personalizados
+.input-field {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.25);
+  }
+}
+
+// Gradiente customizado para botões
+.btn-gradient {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  
+  &:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  }
+}
+
+// Efeito de loading no botão
+.btn-loading {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsividade
+@media (max-width: 380px) {
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .text-3xl {
+    font-size: 1.875rem;
+  }
+}
+
+// Ajustes para dispositivos com altura limitada
+@media (max-height: 700px) {
+  .py-4 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .mb-6 {
+    margin-bottom: 0.75rem;
+  }
+  
+  .mt-6 {
+    margin-top: 0.75rem;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 0.5rem;
+  }
+  
+  .my-6 {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (max-height: 600px) {
+  .py-4 {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+  
+  .mb-6 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .mt-6 {
+    margin-top: 0.5rem;
+  }
+  
+  .mt-4 {
+    margin-top: 0.25rem;
+  }
+  
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 0.25rem;
+  }
+  
+  .my-6 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .py-4 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  // Reduzir padding dos inputs em telas pequenas
+  input {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+}

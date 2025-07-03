@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">ionicdroid</string>
-    <string name="title_activity_main">ionicdroid</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="app_name">Busão CBA</string>
+    <string name="title_activity_main">Busão CBA</string>
+    <string name="package_name">com.josu.busaocba</string>
+    <string name="custom_url_scheme">com.josu.busaocba</string>
 </resources>

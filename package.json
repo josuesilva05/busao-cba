@@ -1,5 +1,5 @@
 {
-  "name": "ionicdroid",
+  "name": "busao-cba",
   "version": "0.0.1",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
@@ -17,6 +17,7 @@
     "@angular/common": "^19.0.0",
     "@angular/compiler": "^19.0.0",
     "@angular/core": "^19.0.0",
+    "@angular/fire": "^20.0.1",
     "@angular/forms": "^19.0.0",
     "@angular/platform-browser": "^19.0.0",
     "@angular/platform-browser-dynamic": "^19.0.0",
@@ -32,6 +33,7 @@
     "@maplibre/ngx-maplibre-gl": "^19.0.0",
     "autoprefixer": "^10.4.21",
     "chart.js": "^4.4.8",
+    "firebase": "^11.9.1",
     "ionicons": "^7.0.0",
     "leaflet": "^1.6.0",
     "leaflet-rotatedmarker": "^0.2.0",

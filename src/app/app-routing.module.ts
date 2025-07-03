@@ -8,16 +8,21 @@ import { PontosComponent } from './shared/pontos/pontos.component';
 import { NotificacoesComponent } from './shared/notificacoes/notificacoes.component';
 import { PerfilComponent } from './shared/perfil/perfil.component';
 import { LoginComponent } from './shared/login/login.component';
+import { CriarContaComponent } from './shared/login/criar-conta/criar-conta.component';
+import { EsqueceuSenhaComponent } from './shared/login/esqueceu-senha/esqueceu-senha.component';
+import { AuthGuard, GuestGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', component: HomePage },
-  { path: 'line-detail/:lineId', component: MapVectorComponent },
-  { path: 'livebus', component: LiveBusComponent },
-  { path: 'horarios', component: HorariosComponent },
-  { path: 'pontos', component: PontosComponent },
-  { path: 'notifications', component: NotificacoesComponent },
-  { path: 'profile', component: PerfilComponent },
-  { path: 'login', component: LoginComponent }
+  { path: '', component: HomePage, canActivate: [AuthGuard] },
+  { path: 'line-detail/:lineId', component: MapVectorComponent, canActivate: [AuthGuard] },
+  { path: 'livebus', component: LiveBusComponent, canActivate: [AuthGuard] },
+  { path: 'horarios', component: HorariosComponent, canActivate: [AuthGuard] },
+  { path: 'pontos', component: PontosComponent, canActivate: [AuthGuard] },
+  { path: 'notifications', component: NotificacoesComponent, canActivate: [AuthGuard] },
+  { path: 'profile', component: PerfilComponent, canActivate: [AuthGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
+  { path: 'criar-conta', component: CriarContaComponent, canActivate: [GuestGuard] },
+  { path: 'esqueceu-senha', component: EsqueceuSenhaComponent, canActivate: [GuestGuard] },
   // {
   //   path: '',
   //   component: NavigatorComponent,

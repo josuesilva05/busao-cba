@@ -1,4 +1,11 @@
 {
+  "name": "Busão CBA",
+  "short_name": "Busão CBA",
+  "theme_color": "#1976d2",
+  "background_color": "#fafafa",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
   "icons": [
     {
       "src": "assets/icons/icon-48.webp",
