@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { UserService, UserProfile } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-perfil',
@@ -18,6 +19,7 @@ export class PerfilComponent  implements OnInit {
   private alertController = inject(AlertController);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
+  private location = inject(Location);
   
   currentUser$ = this.authService.currentUser$;
   userProfile$ = this.userService.userProfile$;
@@ -203,5 +205,10 @@ export class PerfilComponent  implements OnInit {
       position: 'top'
     });
     await toast.present();
+  }
+
+  // Método para voltar à página anterior
+  goBack() {
+    this.location.back();
   }
 }

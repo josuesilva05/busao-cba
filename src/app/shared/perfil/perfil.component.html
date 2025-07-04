@@ -5,6 +5,14 @@
       <!-- Background gradient -->
       <div class="bg-gradient-to-br from-blue-500 to-blue-600 h-40 rounded-b-3xl"></div>
       
+      <!-- Botão de voltar -->
+      <button 
+        (click)="goBack()"
+        class="absolute top-4 left-4 w-10 h-10 bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white/30"
+      >
+        <ion-icon name="chevron-back" class="text-blue-500 text-xl"></ion-icon>
+      </button>
+      
       <!-- Foto do perfil -->
       <div class="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
         <div class="relative">

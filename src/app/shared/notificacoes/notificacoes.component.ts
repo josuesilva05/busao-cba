@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-notificacoes',
@@ -15,9 +16,14 @@ import { RouterModule } from '@angular/router';
   ],
 })
 export class NotificacoesComponent  implements OnInit {
-
+  private location = inject(Location)
   constructor() { }
 
   ngOnInit() {}
+
+  // Método para voltar à página anterior
+  goBack() {
+    this.location.back();
+  }
 
 }

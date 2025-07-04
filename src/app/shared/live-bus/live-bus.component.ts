@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { StatusBar } from '@capacitor/status-bar';
+import { Location } from '@angular/common';
 
 @Component({
   imports: [
@@ -25,6 +26,7 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private liveBusService = inject(LiveBusService);
   private router = inject(Router); // Injeta o Router
+  private location = inject(Location);
 
   searchTerm: string = '';
   lineData: any[] = []; // Inicializa como um array
@@ -186,4 +188,8 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
     clearTimeout(this.longPressTimeout);
   }
 
+  // Método para voltar à página anterior
+  goBack() {
+    this.location.back();
+  }
 }

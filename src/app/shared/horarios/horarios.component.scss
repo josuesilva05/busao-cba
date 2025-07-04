@@ -1,0 +1,121 @@
+// Componente Horários - Estilos customizados
+
+// Garantir que o conteúdo utilize toda a altura disponível
+:host {
+  height: 100%;
+}
+
+// Ajustes para a safe area em diferentes dispositivos
+ion-content {
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+// Melhorias no grid de horários para dispositivos menores
+.grid {
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  @media (min-width: 641px) and (max-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+  }
+  
+  @media (min-width: 1025px) {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+  }
+}
+
+// Ajustes para botões de direção em telas pequenas
+.direction-button {
+  @media (max-width: 480px) {
+    span {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+// Garantir que o header mantenha altura consistente
+.header-container {
+  min-height: 80px;
+}
+
+// Melhorar o espaçamento dos cards
+.card-item {
+  min-height: 80px;
+  
+  @media (max-width: 640px) {
+    padding: 0.75rem;
+  }
+}
+
+// Ajustar tamanho dos ícones para consistência
+ion-icon {
+  font-size: 1.25rem;
+  
+  &.header-icon {
+    font-size: 1.5rem;
+  }
+  
+  &.card-icon {
+    font-size: 1.25rem;
+  }
+  
+  &.small-icon {
+    font-size: 1rem;
+  }
+}
+
+// Melhorar a legibilidade do texto em diferentes tamanhos
+.text-responsive {
+  @media (max-width: 480px) {
+    font-size: 0.875rem;
+  }
+}
+
+// Garantir que os horários sejam facilmente tocáveis
+.schedule-item {
+  min-height: 44px;
+  min-width: 44px;
+  
+  @media (max-width: 640px) {
+    min-height: 40px;
+    min-width: 40px;
+    font-size: 0.875rem;
+  }
+}
+
+// Ajustar o padding do container principal para diferentes tamanhos
+.main-container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  
+  @media (max-width: 640px) {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+// Melhorar o espaçamento dos elementos na tela de loading
+.loading-container {
+  min-height: calc(100vh - 200px);
+}
+
+// Ajustar o espaçamento dos elementos de estatísticas
+.stats-container {
+  gap: 1rem;
+  
+  @media (max-width: 640px) {
+    gap: 0.5rem;
+  }
+}

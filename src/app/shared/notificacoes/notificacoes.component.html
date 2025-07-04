@@ -2,7 +2,7 @@
   <ion-toolbar class="bg-transparent">
     <div class="flex items-center justify-between px-4 py-2 bg-blue-50 dark:bg-gray-800">
       <div class="flex items-center space-x-3">
-        <ion-button fill="clear" size="large" class="text-blue-600 dark:text-white" [routerLink]="['/home']">
+        <ion-button fill="clear" size="large" class="text-blue-600 dark:text-white" (click)="goBack()">
           <ion-icon name="arrow-back" class="text-2xl"></ion-icon>
         </ion-button>
         <h1 class="text-2xl font-bold text-blue-900 dark:text-white">Notificações</h1>

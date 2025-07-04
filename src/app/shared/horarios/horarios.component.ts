@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { Location } from '@angular/common';
 import { environment } from 'src/environments/environment';
 
 interface Linha {
@@ -36,7 +37,7 @@ export class HorariosComponent implements OnInit {
   searchTerm = '';
   selectedDirection: 'ida' | 'volta' = 'ida';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private location: Location) { }
 
   ngOnInit() {
     this.carregarLinhas();
@@ -137,5 +138,10 @@ export class HorariosComponent implements OnInit {
 
   trackByHorario(index: number, horario: string): string {
     return horario;
+  }
+
+  // Método para voltar à página anterior
+  goBack() {
+    this.location.back();
   }
 }

@@ -1,45 +1,47 @@
-<ion-content class="safe-area bg-blue-50 dark:bg-gray-900 relative overflow-hidden">
-  <div class="safe-gap">
-    <!-- Header -->
-    <div class="px-4 pb-4 relative z-10 pt-safe bg-gradient-to-b from-blue-600 to-blue-700 dark:from-gray-800 dark:to-gray-900">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-3">
-          <ion-button fill="clear" size="small" class="text-white" (click)="voltarParaLinhas()" *ngIf="linhaSelecionada">
-            <ion-icon name="arrow-back" class="text-white text-xl"></ion-icon>
-          </ion-button>
-          <div>
-            <h1 class="text-white text-2xl font-bold">
-              {{ linhaSelecionada ? 'Horários' : 'Consultar Horários' }}
-            </h1>
-            <p class="text-blue-200 dark:text-gray-400 text-sm" *ngIf="linhaSelecionada">
-              {{ linhaSelecionada.nome_linha }}
-            </p>
-          </div>
-        </div>
-        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-          <ion-icon name="time" class="text-white text-xl"></ion-icon>
+<ion-content class="bg-blue-50 dark:bg-gray-900 relative overflow-hidden">
+  <!-- Header with Safe Area -->
+  <div class="px-4 pb-6 relative z-10 bg-gradient-to-b from-blue-600 to-blue-700 dark:from-gray-800 dark:to-gray-900 header-container" 
+       style="padding-top: calc(env(safe-area-inset-top)); padding-left: calc(env(safe-area-inset-left) + 16px); padding-right: calc(env(safe-area-inset-right) + 16px);">
+    <div class="flex items-center justify-between min-h-[10px]">
+      <div class="flex items-center space-x-3">
+        <ion-button fill="clear" size="default" class="text-white min-w-[44px] min-h-[44px]" (click)="goBack()" *ngIf="!linhaSelecionada">
+          <ion-icon name="arrow-back" class="text-white text-xl"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" size="default" class="text-white min-w-[44px] min-h-[44px]" (click)="voltarParaLinhas()" *ngIf="linhaSelecionada">
+          <ion-icon name="arrow-back" class="text-white text-xl"></ion-icon>
+        </ion-button>
+        <div>
+          <h1 class="text-white text-xl sm:text-2xl font-bold leading-tight">
+            {{ linhaSelecionada ? 'Horários' : 'Consultar Horários' }}
+          </h1>
+          <p class="text-blue-200 dark:text-gray-400 text-sm mt-1" *ngIf="linhaSelecionada">
+            {{ linhaSelecionada.nome_linha }}
+          </p>
         </div>
       </div>
     </div>
+  </div>
 
+  <!-- Main Content Container -->
+  <div class="main-container -mt-6 relative z-10 px-4" 
+       style="padding-bottom: calc(env(safe-area-inset-bottom) + 24px); padding-left: calc(env(safe-area-inset-left) + 16px); padding-right: calc(env(safe-area-inset-right) + 16px);">
+    
     <!-- Loading state -->
-    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+    <div *ngIf="isLoading" class="flex justify-center items-center py-20">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
     </div>
 
     <!-- Lista de Linhas -->
-    <div *ngIf="!linhaSelecionada && !isLoading" class="px-4 space-y-4 -mt-8 relative z-10">
+    <div *ngIf="!linhaSelecionada && !isLoading" class="space-y-4">
       <!-- Search Bar -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-blue-100 dark:border-gray-700 p-4 mb-6">
-        <div class="relative">
-          <ion-icon name="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></ion-icon>
-          <input 
-            type="text" 
-            [(ngModel)]="searchTerm"
-            placeholder="Buscar linha de ônibus..."
-            class="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-          >
-        </div>
+      <div class="relative">
+        <ion-icon name="search" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg z-10"></ion-icon>
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar linha de ônibus..."
+          class="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-base"
+        >
       </div>
 
       <!-- Lista de Linhas -->
@@ -47,11 +49,11 @@
         <div 
           *ngFor="let linha of linhasFiltradas; trackBy: trackByLinha"
           (click)="selecionarLinha(linha)"
-          class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-blue-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-[1.02]"
+          class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-blue-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-[1.02] p-4 min-h-[80px]"
         >
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between h-full">
             <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+              <div class="w-12 h-12 min-w-[48px] min-h-[48px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
                 <ion-icon name="bus" class="text-white text-xl"></ion-icon>
               </div>
               <div class="flex-1">
@@ -63,80 +65,80 @@
                 </p>
               </div>
             </div>
-            <ion-icon name="chevron-forward" class="text-blue-400 dark:text-blue-300 text-xl"></ion-icon>
+            <ion-icon name="chevron-forward" class="text-blue-400 dark:text-blue-300 text-lg min-w-[24px]"></ion-icon>
           </div>
         </div>
       </div>
 
       <!-- Empty state -->
-      <div *ngIf="linhasFiltradas.length === 0" class="text-center py-12">
+      <div *ngIf="linhasFiltradas.length === 0" class="text-center py-16">
         <div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
           <ion-icon name="search" class="text-gray-400 text-2xl"></ion-icon>
         </div>
-        <p class="text-gray-500 dark:text-gray-400 text-lg">Nenhuma linha encontrada</p>
-        <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Tente buscar com outros termos</p>
+        <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">Nenhuma linha encontrada</p>
+        <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Tente buscar com outros termos</p>
       </div>
     </div>
 
     <!-- Detalhes dos Horários -->
-    <div *ngIf="linhaSelecionada && horarios && !isLoading" class="px-4 space-y-4 -mt-8 relative z-10">
+    <div *ngIf="linhaSelecionada && horarios && !isLoading" class="space-y-4">
       <!-- Direction Selector -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-blue-100 dark:border-gray-700 p-2">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-blue-100 dark:border-gray-700 p-4">
         <div class="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
           <button 
             (click)="selectedDirection = 'ida'"
-            [class]="'flex-1 py-3 px-4 rounded-lg text-sm font-semibold transition-all duration-300 ' + 
+            [class]="'flex-1 py-4 px-4 rounded-lg text-sm font-semibold transition-all duration-300 min-h-[48px] ' + 
                      (selectedDirection === 'ida' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-white shadow-md' : 'text-gray-600 dark:text-gray-400')"
           >
             <div class="flex items-center justify-center space-x-2">
-              <ion-icon name="arrow-forward" class="text-lg"></ion-icon>
-              <span>Ida ({{ horarios.ida.length || 0 }} horários)</span>
+              <ion-icon name="arrow-forward" class="text-base"></ion-icon>
+              <span>Ida ({{ horarios.ida.length || 0 }})</span>
             </div>
           </button>
           <button 
             (click)="selectedDirection = 'volta'"
-            [class]="'flex-1 py-3 px-4 rounded-lg text-sm font-semibold transition-all duration-300 ' + 
+            [class]="'flex-1 py-4 px-4 rounded-lg text-sm font-semibold transition-all duration-300 min-h-[48px] ' + 
                      (selectedDirection === 'volta' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-white shadow-md' : 'text-gray-600 dark:text-gray-400')"
           >
             <div class="flex items-center justify-center space-x-2">
-              <ion-icon name="arrow-back" class="text-lg"></ion-icon>
-              <span>Volta ({{ horarios.volta.length || 0 }} horários)</span>
+              <ion-icon name="arrow-back" class="text-base"></ion-icon>
+              <span>Volta ({{ horarios.volta.length || 0 }})</span>
             </div>
           </button>
         </div>
       </div>
 
       <!-- Next Departure Info -->
-      <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-4 shadow-xl">
+      <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-5 shadow-xl">
         <div class="flex items-center justify-between text-white">
           <div>
-            <p class="text-green-100 text-sm">Próximo Horário</p>
-            <p class="text-2xl font-bold">
-              {{ getNextDeparture(selectedDirection === 'ida' ? (horarios.ida || []) : (horarios.volta || [])) || 'Sem mais horários hoje' }}
+            <p class="text-green-100 text-sm font-medium">Próximo Horário</p>
+            <p class="text-2xl font-bold mt-1">
+              {{ getNextDeparture(selectedDirection === 'ida' ? (horarios.ida || []) : (horarios.volta || [])) || 'Sem mais horários' }}
             </p>
           </div>
-          <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+          <div class="w-12 h-12 min-w-[48px] min-h-[48px] bg-white/20 rounded-full flex items-center justify-center">
             <ion-icon name="time" class="text-white text-xl"></ion-icon>
           </div>
         </div>
       </div>
 
       <!-- Horários Grid -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-blue-100 dark:border-gray-700 p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-blue-100 dark:border-gray-700 p-5">
         <h3 class="text-lg font-bold text-blue-900 dark:text-white mb-4 flex items-center space-x-2">
-          <ion-icon [name]="selectedDirection === 'ida' ? 'arrow-forward' : 'arrow-back'" class="text-blue-600 dark:text-blue-400"></ion-icon>
-          <span>Horários de {{ selectedDirection === 'ida' ? 'Ida' : 'Volta' }}</span>
+          <ion-icon [name]="selectedDirection === 'ida' ? 'arrow-forward' : 'arrow-back'" class="text-blue-600 dark:text-blue-400 text-lg"></ion-icon>
+          <span>{{ selectedDirection === 'ida' ? 'Ida' : 'Volta' }}</span>
         </h3>
         
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           <div 
             *ngFor="let horario of selectedDirection === 'ida' ? (horarios.ida || []) : (horarios.volta || []); trackBy: trackByHorario"
-            [class]="'p-3 rounded-xl text-center transition-all duration-300 cursor-pointer transform hover:scale-105 ' + 
+            [class]="'p-3 rounded-xl text-center transition-all duration-300 cursor-pointer transform hover:scale-105 min-h-[56px] flex items-center justify-center ' + 
                      (isNextDeparture(horario, selectedDirection === 'ida' ? (horarios.ida || []) : (horarios.volta || [])) ? 
                       'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg ring-2 ring-green-300' : 
                       'bg-blue-50 dark:bg-gray-700 text-blue-900 dark:text-white hover:bg-blue-100 dark:hover:bg-gray-600')"
           >
-            <p class="font-bold text-lg">{{ horario }}</p>
+            <p class="font-bold text-base">{{ horario }}</p>
           </div>
         </div>
 
@@ -147,13 +149,13 @@
               <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {{ (selectedDirection === 'ida' ? (horarios.ida.length || 0) : (horarios.volta.length || 0)) }}
               </p>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Total de Horários</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Total</p>
             </div>
             <div class="text-center">
               <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {{ calculateInterval() }}min
               </p>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Intervalo Médio</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Intervalo</p>
             </div>
           </div>
         </div>
@@ -161,21 +163,18 @@
 
       <!-- Legend -->
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-blue-100 dark:border-gray-700 p-4">
-        <h4 class="text-sm font-semibold text-blue-900 dark:text-white mb-3">Legenda</h4>
-        <div class="space-y-2">
+        <h4 class="text-base font-semibold text-blue-900 dark:text-white mb-3">Legenda</h4>
+        <div class="space-y-3">
           <div class="flex items-center space-x-3">
-            <div class="w-4 h-4 bg-gradient-to-br from-green-500 to-green-600 rounded"></div>
+            <div class="w-4 h-4 min-w-[16px] min-h-[16px] bg-gradient-to-br from-green-500 to-green-600 rounded"></div>
             <span class="text-sm text-gray-600 dark:text-gray-400">Próximo horário</span>
           </div>
           <div class="flex items-center space-x-3">
-            <div class="w-4 h-4 bg-blue-50 dark:bg-gray-700 rounded border border-blue-200 dark:border-gray-600"></div>
+            <div class="w-4 h-4 min-w-[16px] min-h-[16px] bg-blue-50 dark:bg-gray-700 rounded border border-blue-200 dark:border-gray-600"></div>
             <span class="text-sm text-gray-600 dark:text-gray-400">Horários disponíveis</span>
           </div>
         </div>
       </div>
-
-      <!-- Bottom spacing for safe area -->
-      <div style="padding-bottom: max(env(safe-area-inset-bottom), 24px);"></div>
     </div>
   </div>
 </ion-content>
