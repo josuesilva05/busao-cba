@@ -203,7 +203,7 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
         this.showCheckboxes = true;
         this.toggleLineSelection(null, lineId, lineName);
       }
-    }, 100); // Reduzido de 200ms para 500ms para melhor experiência
+    }, 200); // Reduzido de 200ms para 500ms para melhor experiência
   }
 
   onTouchMove(event: TouchEvent) {

@@ -164,4 +164,20 @@ export class HomePage implements OnInit {
       console.error('Erro ao testar armazenamento:', error);
     }
   }
+
+  // Método para obter URL do avatar usando UI Avatars
+  getAvatarUrl(): string {
+    if (!this.userProfile?.name) {
+      return 'https://ui-avatars.com/api/?name=User&background=random&color=fff&size=128&rounded=true';
+    }
+    
+    const name = encodeURIComponent(this.userProfile.name);
+    return `https://ui-avatars.com/api/?name=${name}&background=random&color=fff&size=128&rounded=true&bold=true`;
+  }
+
+  // Método para lidar com erro de carregamento de imagem
+  onImageError(event: any) {
+    console.log('Erro ao carregar imagem do avatar, usando fallback');
+    event.target.src = 'https://ui-avatars.com/api/?name=User&background=random&color=fff&size=128&rounded=true';
+  }
 }

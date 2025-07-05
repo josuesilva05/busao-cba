@@ -1,0 +1,24 @@
+// Indicadores de conectividade
+.connectivity-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  
+  ion-icon {
+    margin-right: 8px;
+  }
+}
+
+// Marcadores offline
+.custom-bus-marker.offline-mode .marker-container {
+  background-color: #6b7280;
+  opacity: 0.8;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}

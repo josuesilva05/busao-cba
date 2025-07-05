@@ -11,8 +11,14 @@
           <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md " [routerLink]="['/notifications']">
             <ion-icon name="notifications" class="text-blue-600 dark:text-white text-xl"></ion-icon>
           </div>
-          <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md" [routerLink]="['/profile']">
-            <ion-icon name="person" class="text-blue-600 dark:text-white text-xl"></ion-icon>
+          <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md">
+
+            <div class="w-9 h-9 bg-white dark:bg-gray-800 rounded-full overflow-hidden shadow-md" [routerLink]="['/profile']">
+              <img [src]="getAvatarUrl()" 
+                   [alt]="(userProfile?.name || 'User') + ' avatar'"
+                   class="w-full h-full object-cover"
+                   (error)="onImageError($event)">
+            </div>
           </div>
         </div>
       </div>

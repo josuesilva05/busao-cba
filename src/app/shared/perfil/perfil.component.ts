@@ -211,4 +211,42 @@ export class PerfilComponent  implements OnInit {
   goBack() {
     this.location.back();
   }
+
+  // Método para obter URL do avatar usando UI Avatars
+  getAvatarUrl(): string {
+    if (!this.userProfile?.name) {
+      return 'https://ui-avatars.com/api/?name=User&background=random&color=fff&size=128&rounded=true';
+    }
+    
+    const name = encodeURIComponent(this.userProfile.name);
+    return `https://ui-avatars.com/api/?name=${name}&background=random&color=fff&size=128&rounded=true&bold=true`;
+  }
+
+  // Método para obter URL do mini avatar
+  getMiniAvatarUrl(): string {
+    if (!this.userProfile?.name) {
+      return 'https://ui-avatars.com/api/?name=User&background=random&color=fff&size=128&rounded=true';
+    }
+    
+    const name = encodeURIComponent(this.userProfile.name);
+    return `https://ui-avatars.com/api/?name=${name}&background=random&color=fff&size=128&rounded=true&bold=true`;
+  }
+
+  // Método para quando o avatar for clicado
+  async onAvatarClick() {
+    const toast = await this.toastCtrl.create({
+      message: 'Avatar gerado automaticamente com base no seu nome',
+      duration: 2000,
+      position: 'bottom',
+      color: 'primary'
+    });
+    await toast.present();
+  }
+
+  // Método para lidar com erro de carregamento de imagem
+  onImageError(event: any) {
+    console.log('Erro ao carregar imagem do avatar, usando fallback');
+    // Usar um fallback local ou uma imagem padrão
+    event.target.src = 'https://ui-avatars.com/api/?name=User&background=random&color=fff&size=128&rounded=true';
+  }
 }

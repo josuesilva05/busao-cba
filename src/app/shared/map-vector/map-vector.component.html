@@ -1,5 +1,5 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="primary">
+  <ion-toolbar class="bg-gray-800">
     <ion-buttons slot="start">
       <ion-button (click)="onBack()" class="font-medium">
         <ion-icon name="arrow-back-outline" slot="start" class="text-white"></ion-icon>
@@ -11,7 +11,14 @@
 
 <ion-content class="map-content">
   <div *ngIf="socketDisconnected" class="absolute top-0 z-50 w-full bg-red-500 text-white p-2 text-center">
-    Conexão perdida. Reconectando...
+    <ion-icon name="wifi-outline" class="mr-2"></ion-icon>
+    <span *ngIf="!isOffline">Conexão perdida. Reconectando...</span>
+    <span *ngIf="isOffline">Modo offline ativo</span>
+  </div>
+
+  <div *ngIf="isOffline && !socketDisconnected" class="absolute top-0 z-50 w-full bg-orange-500 text-white p-2 text-center">
+    <ion-icon name="cloud-offline-outline" class="mr-2"></ion-icon>
+    <span>Usando dados em cache</span>
   </div>
 
   <div id="map"

@@ -1,28 +1,35 @@
 <ion-content class="safe-area bg-blue-50 dark:bg-gray-800">
-  <div class="safe-gap">
+  <div class="perfil-safe-container">
     <!-- Header com foto do perfil -->
-    <div class="relative">
-      <!-- Background gradient -->
-      <div class="bg-gradient-to-br from-blue-500 to-blue-600 h-40 rounded-b-3xl"></div>
+    <div class="relative header-container">
       
       <!-- Botão de voltar -->
       <button 
         (click)="goBack()"
-        class="absolute top-4 left-4 w-10 h-10 bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white/30"
+        class="back-button"
       >
-        <ion-icon name="chevron-back" class="text-blue-500 text-xl"></ion-icon>
+        <ion-icon name="chevron-back" class="text-white text-xl"></ion-icon>
       </button>
       
       <!-- Foto do perfil -->
       <div class="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
         <div class="relative">
-          <div class="w-32 h-32 bg-white dark:bg-gray-800 rounded-full p-1 shadow-xl">
-            <div class="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-              <ion-icon name="person" class="text-white text-5xl"></ion-icon>
+          <div class="w-32 h-32 bg-white dark:bg-gray-800 rounded-full p-1 shadow-xl cursor-pointer" 
+               (click)="onAvatarClick()">
+            <div *ngIf="userProfile; else loadingAvatar" 
+                 class="w-full h-full rounded-full overflow-hidden avatar-container">
+              <img [src]="getAvatarUrl()" 
+                   [alt]="userProfile.name + ' avatar'"
+                   class="w-full h-full object-cover"
+                   (error)="onImageError($event)">
             </div>
+            <ng-template #loadingAvatar>
+              <div class="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded-full flex items-center justify-center">
+                <ion-spinner name="crescent" class="text-white"></ion-spinner>
+              </div>
+            </ng-template>
           </div>
-          <!-- Badge de status online -->
-          <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white dark:border-gray-800"></div>
+   
         </div>
       </div>
     </div>
@@ -66,9 +73,18 @@
           <!-- Nome -->
           <div class="flex items-center justify-between px-6 py-4">
             <div class="flex items-center space-x-4">
-              <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                <ion-icon name="person" class="text-blue-600 dark:text-blue-400"></ion-icon>
+              <div *ngIf="userProfile; else loadingMiniAvatar" 
+                   class="w-10 h-10 rounded-full overflow-hidden mini-avatar">
+                <img [src]="getMiniAvatarUrl()" 
+                     [alt]="userProfile.name + ' avatar'"
+                     class="w-full h-full object-cover"
+                     (error)="onImageError($event)">
               </div>
+              <ng-template #loadingMiniAvatar>
+                <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                  <ion-spinner name="crescent" class="w-4 h-4"></ion-spinner>
+                </div>
+              </ng-template>
               <div>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Nome</p>
                 <p class="text-blue-900 dark:text-white font-medium">{{ userProfile?.name || 'Não informado' }}</p>
@@ -246,7 +262,7 @@
       </div>
 
       <!-- Botão de logout -->
-      <div class="pb-8">
+      <div class="logout-container">
         <button (click)="confirmLogout()" class="logout-button w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-3xl shadow-lg transition-all duration-300 flex items-center justify-center space-x-3">
           <ion-icon name="log-out-outline" class="text-xl"></ion-icon>
           <span>Sair da conta</span>

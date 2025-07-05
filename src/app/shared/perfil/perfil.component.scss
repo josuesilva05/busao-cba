@@ -58,3 +58,232 @@ ion-alert {
     box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4);
   }
 }
+
+// Container principal do perfil com safe area
+.perfil-safe-container {
+  min-height: 100vh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  padding-top: max(env(safe-area-inset-top), 12px);
+  padding-bottom: max(env(safe-area-inset-bottom), 12px);
+  padding-left: max(env(safe-area-inset-left), 12px);
+  padding-right: max(env(safe-area-inset-right), 12px);
+  
+  // Garantir que o conteúdo não ultrapasse a área visível
+  box-sizing: border-box;
+  max-width: 100vw;
+  overflow-x: hidden;
+  
+  // Para Android - garantir espaçamento adequado
+  @supports (padding: max(0px)) {
+    padding-top: max(env(safe-area-inset-top), 20px);
+    padding-bottom: max(env(safe-area-inset-bottom), 20px);
+  }
+  
+  // Garantir scroll suave
+  -webkit-overflow-scrolling: touch;
+  
+  // Ajustar para diferentes tamanhos de tela
+  @media (max-height: 700px) {
+    padding-top: max(env(safe-area-inset-top), 8px);
+    padding-bottom: max(env(safe-area-inset-bottom), 8px);
+  }
+}
+
+// Ajustes específicos para Android
+@supports (padding: env(safe-area-inset-top)) {
+  .perfil-safe-container {
+    // Usar variáveis CSS para safe area
+    --safe-area-top: env(safe-area-inset-top, 20px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+    --safe-area-left: env(safe-area-inset-left, 12px);
+    --safe-area-right: env(safe-area-inset-right, 12px);
+    
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
+    padding-left: var(--safe-area-left);
+    padding-right: var(--safe-area-right);
+  }
+  
+  .header-container {
+    padding-top: calc(var(--safe-area-top) + 20px);
+    margin-top: calc(0px - var(--safe-area-top));
+  }
+  
+  .back-button {
+    top: calc(var(--safe-area-top) + 20px);
+  }
+}
+
+// Fallback para dispositivos sem safe area
+@supports not (padding: env(safe-area-inset-top)) {
+  .perfil-safe-container {
+    padding: 20px 12px;
+  }
+  
+  .header-container {
+    padding-top: 40px;
+    margin-top: -20px;
+  }
+  
+  .back-button {
+    top: 40px;
+  }
+}
+
+// Container do botão de logout
+.logout-container {
+  margin-top: auto;
+  padding-top: 16px;
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
+}
+
+// Header do perfil
+.header-container {
+  min-height: 200px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  border-radius: 0 0 32px 32px;
+  margin: -12px -12px 0 -12px;
+  padding: 20px 20px 80px 20px;
+  position: relative;
+  
+  // Ajustar para safe area no topo
+  padding-top: max(env(safe-area-inset-top, 20px), 40px);
+}
+
+// Botão de voltar
+.back-button {
+  position: absolute;
+  top: max(env(safe-area-inset-top, 20px), 40px);
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Avatar com imagem da API
+.avatar-container {
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  
+  // Efeito de hover
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  // Animação de entrada
+  animation: avatarFadeIn 0.5s ease-out;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  img {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+}
+
+// Animação de entrada do avatar
+@keyframes avatarFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Efeito de loading para imagens
+.avatar-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Mini avatar para as seções de informações
+.mini-avatar {
+  position: relative;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+  
+  img {
+    transition: all 0.2s ease;
+    
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+}
+
+// Efeito de pulsação para estados de carregamento
+.pulse-loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Estilos para o spinner customizado
+ion-spinner {
+  --color: rgba(255, 255, 255, 0.8);
+}
+
+// Ícone de câmera no avatar
+.camera-icon {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+    background: #2563eb;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}

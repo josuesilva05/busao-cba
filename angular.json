@@ -21,7 +21,8 @@
             "inlineStyleLanguage": "scss",
             "allowedCommonJsDependencies": [
               "leaflet",
-              "leaflet.awesome-markers"
+              "leaflet.awesome-markers",
+              "maplibre-gl"
             ],
             "assets": [
               {
@@ -40,7 +41,8 @@
               "src/global.scss",
               "src/theme/variables.scss",
               "node_modules/leaflet/dist/leaflet.css",
-              "node_modules/leaflet.awesome-markers/dist/leaflet.awesome-markers.css"
+              "node_modules/leaflet.awesome-markers/dist/leaflet.awesome-markers.css",
+              "node_modules/maplibre-gl/dist/maplibre-gl.css"
             ],
             "scripts": [
               "node_modules/leaflet/dist/leaflet.js",
