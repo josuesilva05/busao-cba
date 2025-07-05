@@ -1,6 +1,6 @@
 <ion-content class="bg-blue-50 dark:bg-gray-900 relative overflow-hidden">
   <!-- Header with Safe Area -->
-  <div class="px-4 pb-6 relative z-10 bg-gradient-to-b from-blue-600 to-blue-700 dark:from-gray-800 dark:to-gray-900 header-container" 
+  <div class="px-4 relative z-10 bg-gradient-to-b from-blue-600 to-blue-700 dark:from-gray-800 dark:to-gray-900 mb-6" 
        style="padding-top: calc(env(safe-area-inset-top)); padding-left: calc(env(safe-area-inset-left) + 16px); padding-right: calc(env(safe-area-inset-right) + 16px);">
     <div class="flex items-center justify-between min-h-[10px]">
       <div class="flex items-center space-x-3">
@@ -16,31 +16,33 @@
     </div>
   </div>
 
+  <!-- FAB Buttons -->
+  <ion-fab
+    *ngIf="selectedLines.length > 0"
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+  >
+    <ion-fab-button
+      class="fab-button cancel-button"
+      (click)="clearSelection()"
+      color="danger"
+    >
+      <ion-icon name="close"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button
+      class="fab-butto"
+      (click)="navigateWithSelectedLines()"
+      color="success"
+    >
+      <ion-icon name="arrow-forward"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <!-- Main Content Container -->
   <div class="main-container -mt-6 relative z-10 px-4" 
        style="padding-bottom: calc(env(safe-area-inset-bottom) + 24px); padding-left: calc(env(safe-area-inset-left) + 16px); padding-right: calc(env(safe-area-inset-right) + 16px);">
     
-    <ion-fab
-      *ngIf="selectedLines.length > 0"
-      vertical="bottom"
-      horizontal="end"
-      slot="fixed"
-    >
-      <ion-fab-button
-        class="fab-button cancel-button"
-        (click)="clearSelection()"
-        color="danger"
-      >
-        <ion-icon name="close"></ion-icon>
-      </ion-fab-button>
-      <ion-fab-button
-        class="fab-button confirm-button mt-2 mb-2"
-        (click)="navigateWithSelectedLines()"
-      >
-        <ion-icon name="arrow-forward"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-
       <div class="relative mb-6 rounded-xl py-2 search-container">
         <div class="px-2">
           <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl p-4 flex items-center space-x-3">

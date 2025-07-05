@@ -176,3 +176,54 @@
   }
 }
 
+// Dark mode styles
+.user-marker.dark-mode {
+  .user-marker-inner {
+    background: #60a5fa;
+    border: 3px solid #1f2937;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+  
+  .user-marker-pulse {
+    background: rgba(96, 165, 250, 0.3);
+  }
+}
+
+.ponto-marker-container.dark-mode {
+  .ponto-marker-icon {
+    background: #60a5fa;
+    border: 3px solid #1f2937;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    
+    ion-icon {
+      color: #1f2937;
+    }
+  }
+}
+
+// Dark mode popup styles
+:host-context(.dark) .ponto-popup {
+  background: #374151;
+  
+  strong {
+    color: #f9fafb;
+  }
+  
+  small {
+    color: #d1d5db;
+  }
+}
+
+// Dark mode small user marker for legend
+.user-marker-small.dark-mode {
+  &::before {
+    background: #60a5fa;
+    border: 2px solid #1f2937;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  }
+  
+  &::after {
+    background: rgba(96, 165, 250, 0.2);
+  }
+}
+

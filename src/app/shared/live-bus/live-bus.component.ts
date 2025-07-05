@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { LiveBusService } from 'src/app/services/live-bus.service';
+import { StorageService } from 'src/app/services/storage.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -25,6 +26,7 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
 
   private route = inject(ActivatedRoute);
   private liveBusService = inject(LiveBusService);
+  private storageService = inject(StorageService);
   private router = inject(Router); // Injeta o Router
   private location = inject(Location);
 
@@ -77,15 +79,35 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
   }
 
   // Método para navegar para outro componente
-  navigateToLineDetail(lineId: string, lineName: string) {
+  async navigateToLineDetail(lineId: string, lineName: string) {
     // Só navega se não estiver em modo de seleção
     if (!this.showCheckboxes) {
+      // Salvar linha acessada no banco
+      await this.saveLineAccess(lineId, lineName);
+      
       this.router.navigate(['/line-detail', lineId], {
         state: { lineName: lineName }
       });
     } else {
       // Se estiver em modo de seleção, seleciona o item
       this.toggleLineSelection(null, lineId, lineName);
+    }
+  }
+
+  private async saveLineAccess(lineId: string, lineName: string) {
+    try {
+      // Encontrar a linha completa nos dados
+      const line = this.lineData.find(l => l.id === lineId);
+      if (line) {
+        await this.storageService.addOrUpdateLine({
+          id: line.id,
+          name: line.name,
+          prefix: line.prefix,
+          company: 'Empresa de Transporte' // Você pode buscar isso da API se disponível
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao salvar linha acessada:', error);
     }
   }
 
@@ -111,8 +133,11 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
     return this.selectedLines.includes(lineId);
   }
 
-  navigateWithSelectedLines() {
+  async navigateWithSelectedLines() {
     if (this.selectedLines.length === 0) return;
+
+    // Salvar todas as linhas selecionadas
+    await this.saveSelectedLines();
 
     const lineIds = this.selectedLines.join(',');
     const selectedLineNames = this.lineData
@@ -123,6 +148,25 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/line-detail', lineIds], {
       state: { lineName: selectedLineNames }
     });
+  }
+
+  private async saveSelectedLines() {
+    try {
+      const selectedLinesData = this.lineData.filter(line => 
+        this.selectedLines.includes(line.id)
+      );
+
+      for (const line of selectedLinesData) {
+        await this.storageService.addOrUpdateLine({
+          id: line.id,
+          name: line.name,
+          prefix: line.prefix,
+          company: 'Empresa de Transporte'
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao salvar linhas selecionadas:', error);
+    }
   }
 
   clearSelection() {
@@ -159,7 +203,7 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
         this.showCheckboxes = true;
         this.toggleLineSelection(null, lineId, lineName);
       }
-    }, 200); // 800ms para long press
+    }, 100); // Reduzido de 200ms para 500ms para melhor experiência
   }
 
   onTouchMove(event: TouchEvent) {
@@ -181,7 +225,7 @@ export class LiveBusComponent implements OnInit, AfterViewInit {
     this.longPressTimeout = setTimeout(() => {
       this.showCheckboxes = true;
       this.toggleLineSelection(null, lineId, lineName);
-    }, 800);
+    }, 500); // Reduzido de 800ms para 500ms para melhor experiência
   }
 
   onMouseUp() {

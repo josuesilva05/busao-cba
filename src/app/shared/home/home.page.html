@@ -32,37 +32,48 @@
             </div>
           </div>
 
-          <!-- Linhas frequentes -->
-          <div>
-           <div class="space-y-3">
-              <!-- Linha 608 -->
-              <div class="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors">
+          <!-- Card de Pontos Próximos -->
+          <div class="px-2">
+            <!-- Card normal sem erro -->
+            <div *ngIf="!nearbyPointsError" class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300" [routerLink]="['/pontos']">
+              <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                  <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                    <!-- <ion-icon name="location" class="text-blue-600 dark:text-blue-400 text-sm"></ion-icon> -->
-                    <ion-icon name="bus" class="text-white text-lg"></ion-icon>
+                  <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <ion-icon name="location" class="text-white text-2xl"></ion-icon>
                   </div>
                   <div>
-                    <p class="font-bold text-blue-900 dark:text-white text-sm">Linha fulano de tal</p>
-                    <p class="text-xs text-blue-600 dark:text-blue-400">Empresa Cidade</p>
+                    <h3 class="text-white font-bold text-lg">Pontos próximos</h3>
+                    <p class="text-blue-100 text-sm">
+                      {{ nearbyPointsCount > 0 ? nearbyPointsCount + ' pontos encontrados' : 'Buscando pontos...' }}
+                    </p>
                   </div>
                 </div>
-                <ion-icon name="chevron-forward" class="text-blue-400 dark:text-blue-300 text-lg"></ion-icon>
+                <div class="text-right">
+                  <div class="text-white text-3xl font-bold">{{ nearbyPointsCount }}</div>
+                  <div class="text-blue-100 text-xs">em 500m</div>
+                </div>
               </div>
+            </div>
 
-              <!-- Linha 105 -->
-              <div class="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors">
+            <!-- Card com erro -->
+            <div *ngIf="nearbyPointsError" class="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-4 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300" (click)="retryNearbyPoints()">
+              <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                  <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                    <!-- <ion-icon name="location" class="text-blue-600 dark:text-blue-400 text-sm"></ion-icon> -->
-                     <ion-icon name="bus" class="text-white text-lg"></ion-icon>
+                  <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <ion-icon name="warning" class="text-white text-2xl"></ion-icon>
                   </div>
                   <div>
-                    <p class="font-bold text-blue-900 dark:text-white text-sm">Linha ciclano de tal</p>
-                    <p class="text-xs text-blue-600 dark:text-blue-400">Transportes Unidos</p>
+                    <h3 class="text-white font-bold text-lg">Erro ao buscar pontos</h3>
+                    <p class="text-red-100 text-sm">
+                      Toque para tentar novamente
+                    </p>
                   </div>
                 </div>
-                <ion-icon name="chevron-forward" class="text-blue-400 dark:text-blue-300 text-lg"></ion-icon>
+                <div class="text-right">
+                  <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <ion-icon name="refresh" class="text-white text-lg"></ion-icon>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -102,69 +113,34 @@
         </div>
       </div>
 
-      <!-- Seção de Informações -->
-      <div>
-        <h2 class="text-xl font-bold text-blue-900 dark:text-white mb-4">Informações</h2>
-        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-blue-100 dark:border-gray-700">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-              <ion-icon name="information" class="text-white text-lg"></ion-icon>
-            </div>
-            <p class="text-blue-800 dark:text-blue-300 text-base font-medium">Existem 8 pontos perto de você</p>
-          </div>
-        </div>
-      </div>
-
       <!-- Seção de Buscas recentes -->
       <div style="padding-bottom: max(env(safe-area-inset-bottom), 24px);">
         <h2 class="text-xl font-bold text-blue-900 dark:text-white mb-4">Buscas recentes</h2>
         <div class="space-y-3">
-          <!-- Linha 608 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-blue-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
+          <!-- Buscas recentes dinâmicas -->
+          <div 
+            *ngFor="let line of recentLines" 
+            class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-blue-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 cursor-pointer"
+            (click)="navigateToLineDetail(line.id, line.name)"
+          >
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
                   <ion-icon name="bus" class="text-white text-lg"></ion-icon>
                 </div>
                 <div>
-                  <p class="text-blue-600 dark:text-blue-400 text-sm font-medium">Linha 608</p>
-                  <p class="text-blue-900 dark:text-white font-bold">Parque Residencial</p>
+                  <p class="text-blue-600 dark:text-blue-400 text-sm font-medium">{{ line.prefix }}</p>
+                  <p class="text-blue-900 dark:text-white font-bold">{{ line.name }}</p>
                 </div>
               </div>
               <ion-icon name="chevron-forward" class="text-blue-400 dark:text-blue-300 text-lg"></ion-icon>
             </div>
           </div>
 
-          <!-- Linha 410 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-blue-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                  <ion-icon name="bus" class="text-white text-lg"></ion-icon>
-                </div>
-                <div>
-                  <p class="text-blue-600 dark:text-blue-400 text-sm font-medium">Linha 410</p>
-                  <p class="text-blue-900 dark:text-white font-bold">Grande Terceiro</p>
-                </div>
-              </div>
-              <ion-icon name="chevron-forward" class="text-blue-400 dark:text-blue-300 text-lg"></ion-icon>
-            </div>
-          </div>
-
-          <!-- Linha 340 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-blue-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                  <ion-icon name="bus" class="text-white text-lg"></ion-icon>
-                </div>
-                <div>
-                  <p class="text-blue-600 dark:text-blue-400 text-sm font-medium">Linha 340</p>
-                  <p class="text-blue-900 dark:text-white font-bold">Morada do Ouro</p>
-                </div>
-              </div>
-              <ion-icon name="chevron-forward" class="text-blue-400 dark:text-blue-300 text-lg"></ion-icon>
-            </div>
+          <!-- Placeholder quando não há buscas recentes -->
+          <div *ngIf="recentLines.length === 0" class="text-center py-8">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">Nenhuma busca recente</p>
+            <p class="text-gray-400 dark:text-gray-500 text-xs">Suas buscas aparecerão aqui</p>
           </div>
         </div>
       </div>

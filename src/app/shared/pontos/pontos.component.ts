@@ -35,6 +35,8 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
   private userLocationMarker: L.Marker | undefined;
   private pontosMarkers: L.Marker[] = [];
   private locationSubscription?: Subscription;
+  private radiusCircle: L.Circle | undefined;
+  private currentTileLayer: L.TileLayer | undefined;
 
   currentLocation: LocationData | null = null;
   pontos: Ponto[] = [];
@@ -42,6 +44,7 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
   searchRadius = 500;
   totalPontos = 0;
   mapInitialized = false;
+  locationInitialized = false;
 
   constructor(
     private geolocationService: GeolocationService,
@@ -53,6 +56,7 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.subscribeToLocation();
+    this.subscribeToThemeChanges();
   }
 
   ngAfterViewInit() {
@@ -68,6 +72,19 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
     this.geolocationService.stopWatching();
     
     if (this.map) {
+      // Clean up all layers
+      if (this.currentTileLayer) {
+        this.map.removeLayer(this.currentTileLayer);
+      }
+      if (this.userLocationMarker) {
+        this.map.removeLayer(this.userLocationMarker);
+      }
+      if (this.radiusCircle) {
+        this.map.removeLayer(this.radiusCircle);
+      }
+      this.pontosMarkers.forEach(marker => {
+        this.map?.removeLayer(marker);
+      });
       this.map.remove();
     }
   }
@@ -84,6 +101,23 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
+  private subscribeToThemeChanges() {
+    // Listen for theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      this.updateMapTheme();
+    });
+    
+    // Listen for manual theme changes (if your app has a theme toggle)
+    const observer = new MutationObserver(() => {
+      this.updateMapTheme();
+    });
+    
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+  }
+
   private async initializeMap() {
     if (this.mapInitialized || !this.mapContainer) {
       return;
@@ -97,12 +131,19 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
       this.map = L.map(this.mapContainer.nativeElement, {
         center: [defaultLat, defaultLng],
         zoom: 13,
-        zoomControl: true,
+        zoomControl: false,
         attributionControl: false
       });
 
-      // Add tile layer
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      // Add tile layer with dark mode support
+      const isDarkMode = document.body.classList.contains('dark') || 
+                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      const tileLayerUrl = isDarkMode 
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      
+      this.currentTileLayer = L.tileLayer(tileLayerUrl, {
         maxZoom: 19,
         attribution: ''
       }).addTo(this.map);
@@ -114,8 +155,10 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.mapInitialized = true;
 
-      // Try to get current location
-      await this.getCurrentLocation();
+      // Try to get current location only if not initialized before
+      if (!this.locationInitialized) {
+        await this.getCurrentLocation();
+      }
     } catch (error) {
       console.error('Error initializing map:', error);
     }
@@ -148,6 +191,9 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
       // Start watching location
       await this.geolocationService.startWatching();
 
+      // Mark location as initialized
+      this.locationInitialized = true;
+
     } catch (error) {
       console.error('Error getting location:', error);
       await this.showToast('Erro ao obter localização. Usando localização padrão.', 'warning');
@@ -159,10 +205,13 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
   private updateUserLocationOnMap(location: LocationData) {
     if (!this.map) return;
 
+    const isDarkMode = document.body.classList.contains('dark') || 
+                      window.matchMedia('(prefers-color-scheme: dark)').matches;
+
     const userIcon = L.divIcon({
       className: 'user-location-marker',
       html: `
-        <div class="user-marker">
+        <div class="user-marker ${isDarkMode ? 'dark-mode' : ''}">
           <div class="user-marker-inner"></div>
           <div class="user-marker-pulse"></div>
         </div>
@@ -185,6 +234,35 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
           <small>Precisão: ${location.accuracy?.toFixed(0)}m</small>
         </div>
       `);
+    }
+
+    // Update or create radius circle
+    this.updateRadiusCircle(location);
+  }
+
+  private updateRadiusCircle(location: LocationData) {
+    if (!this.map) return;
+
+    const isDarkMode = document.body.classList.contains('dark') || 
+                      window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const circleOptions = {
+      color: isDarkMode ? '#60a5fa' : '#3b82f6',
+      fillColor: isDarkMode ? '#60a5fa' : '#3b82f6',
+      fillOpacity: 0.1,
+      weight: 2,
+      opacity: 0.6
+    };
+
+    if (this.radiusCircle) {
+      this.radiusCircle.setLatLng([location.latitude, location.longitude]);
+      this.radiusCircle.setRadius(this.searchRadius);
+      this.radiusCircle.setStyle(circleOptions);
+    } else {
+      this.radiusCircle = L.circle([location.latitude, location.longitude], {
+        radius: this.searchRadius,
+        ...circleOptions
+      }).addTo(this.map);
     }
   }
 
@@ -216,12 +294,15 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     this.pontosMarkers = [];
 
+    const isDarkMode = document.body.classList.contains('dark') || 
+                      window.matchMedia('(prefers-color-scheme: dark)').matches;
+
     // Add new markers
     this.pontos.forEach(ponto => {
       const pontoIcon = L.divIcon({
         className: 'ponto-marker',
         html: `
-          <div class="ponto-marker-container">
+          <div class="ponto-marker-container ${isDarkMode ? 'dark-mode' : ''}">
             <div class="ponto-marker-icon">
               <ion-icon name="bus"></ion-icon>
             </div>
@@ -246,10 +327,39 @@ export class PontosComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  private updateMapTheme() {
+    if (!this.map) return;
+    
+    const isDarkMode = document.body.classList.contains('dark') || 
+                      window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Update tile layer
+    if (this.currentTileLayer) {
+      this.map.removeLayer(this.currentTileLayer);
+    }
+    
+    const tileLayerUrl = isDarkMode 
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    
+    this.currentTileLayer = L.tileLayer(tileLayerUrl, {
+      maxZoom: 19,
+      attribution: ''
+    }).addTo(this.map);
+    
+    // Update markers
+    if (this.currentLocation) {
+      this.updateUserLocationOnMap(this.currentLocation);
+    }
+    this.updatePontosOnMap();
+  }
+
   async changeRadius(newRadius: number) {
     this.searchRadius = newRadius;
     
+    // Update radius circle
     if (this.currentLocation) {
+      this.updateRadiusCircle(this.currentLocation);
       await this.loadNearbyPontos(this.currentLocation.latitude, this.currentLocation.longitude);
     }
   }
