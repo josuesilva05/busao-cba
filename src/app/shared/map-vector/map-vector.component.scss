@@ -307,6 +307,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(2px);
+  transition: opacity 0.3s ease-in-out;
 
   ion-spinner {
     width: 2rem;
@@ -329,6 +331,7 @@
 #map {
   height: 100%;
   width: 100%;
+  transition: opacity 0.3s ease-in-out;
 
   .maplibregl-ctrl-attrib {
     font-size: 0.75rem;

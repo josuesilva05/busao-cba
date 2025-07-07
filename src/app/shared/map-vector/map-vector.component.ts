@@ -24,6 +24,7 @@ import { ConnectivityService } from 'src/app/services/connectivity.service';
 export class MapVectorComponent implements OnInit, OnDestroy {
   @Input() lineId!: string;
   showMap: boolean = true;
+  isLoading: boolean = true;
 
   private map: maplibregl.Map | null = null;
   private busMarkers = new Map<string, maplibregl.Marker>();
@@ -40,6 +41,8 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   private pendingUpdates = new Map<string, any>();
   private updateQueue: any[] = [];
   private isProcessingQueue = false;
+  hasReceivedData = false;
+  polylinesLoaded = false;
 
   constructor(
     private socketService: SocketService,
@@ -65,6 +68,8 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log('MapVectorComponent ngOnInit iniciado');
+    
     // Monitora conectividade
     this.connectivitySubscription = this.connectivityService.isOnline$.subscribe(
       isOnline => {
@@ -84,6 +89,9 @@ export class MapVectorComponent implements OnInit, OnDestroy {
       const paramLineId = params.get('lineId');
       if (paramLineId) {
         this.lineId = paramLineId;
+        console.log('LineId recebido:', this.lineId);
+        
+        // Inicializa imediatamente - o container já está no DOM
         this.initializeMapAndSocket();
       }
     });
@@ -93,66 +101,86 @@ export class MapVectorComponent implements OnInit, OnDestroy {
     // Limpa recursos existentes
     this.cleanupResources();
 
-    // Inicializa o mapa
+    // Aguarda um tempo mínimo e inicializa o mapa
     setTimeout(() => {
       this.initMap();
       this.setupSocket();
       // Remover loadPolylines() daqui - será chamado quando o mapa carregar
-    }, 100);
+    }, 50); // Reduzido para 50ms
   }
 
   private async initMap(): Promise<void> {
     console.log('Iniciando mapa...');
     
-    // Simplificado: usa sempre o estilo online para evitar verificações desnecessárias
-    const mapStyle = 'https://tiles.openfreemap.org/styles/bright';
-    console.log('Usando estilo online (cache desabilitado)');
-
-    this.map = new maplibregl.Map({
-      container: 'map',
-      style: mapStyle,
-      center: [-56.0979, -15.6014],
-      zoom: 15,
-      maxZoom: 18,
-      minZoom: 10,
-      hash: false,
-      attributionControl: false,
-      logoPosition: 'bottom-right'
-    });
-
-    console.log('Mapa criado, aguardando carregamento...');
-
-    // Adiciona controles de navegação
-    this.map.addControl(new maplibregl.NavigationControl({
-      showCompass: false,
-      visualizePitch: false
-    }), 'bottom-right');
+    // Aguarda o elemento do mapa estar disponível no DOM
+    const mapContainer = await this.waitForMapContainer();
+    if (!mapContainer) {
+      console.error('Container do mapa não encontrado após timeout');
+      // Não tenta novamente aqui para evitar loops infinitos
+      return;
+    }
     
-    // Adiciona controle de escala
-    this.map.addControl(new maplibregl.ScaleControl({
-      maxWidth: 80,
-      unit: 'metric'
-    }), 'bottom-left');
+    try {
+      // Simplificado: usa sempre o estilo online para evitar verificações desnecessárias
+      const mapStyle = 'https://tiles.openfreemap.org/styles/bright';
+      console.log('Usando estilo online (cache desabilitado)');
 
-    // Aguarda o mapa carregar completamente
-    this.map.on('load', () => {
-      console.log('Evento load do mapa disparado');
-      this.mapLoaded = true;
-      this.onMapLoad();
-      this.processUpdateQueue();
-    });
+      this.map = new maplibregl.Map({
+        container: 'map',
+        style: mapStyle,
+        center: [-56.0979, -15.6014],
+        zoom: 15,
+        maxZoom: 18,
+        minZoom: 10,
+        hash: false,
+        attributionControl: false,
+        logoPosition: 'bottom-right'
+      });
 
-    // Evento moveend desabilitado - cache automático não é necessário
-    // this.map.on('moveend', () => {
-    //   this.cacheBoundsIfNeeded();
-    // });
+      console.log('Mapa criado, aguardando carregamento...');
 
-    console.log('Mapa configurado, aguardando evento load...');
+      // Adiciona controles de navegação
+      this.map.addControl(new maplibregl.NavigationControl({
+        showCompass: false,
+        visualizePitch: false
+      }), 'bottom-right');
+      
+      // Adiciona controle de escala
+      this.map.addControl(new maplibregl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+      }), 'bottom-left');
+
+      // Aguarda o mapa carregar completamente
+      this.map.on('load', () => {
+        console.log('Evento load do mapa disparado');
+        this.mapLoaded = true;
+        this.onMapLoad();
+        this.processUpdateQueue();
+      });
+
+      // Evento de erro do mapa
+      this.map.on('error', (e) => {
+        console.error('Erro no mapa:', e);
+      });
+
+      // Evento moveend desabilitado - cache automático não é necessário
+      // this.map.on('moveend', () => {
+      //   this.cacheBoundsIfNeeded();
+      // });
+
+      console.log('Mapa configurado, aguardando evento load...');
+    } catch (error) {
+      console.error('Erro ao criar mapa:', error);
+      // Remove o estado de loading em caso de erro
+      this.isLoading = false;
+    }
   }
 
   private onMapLoad(): void {
     // Método chamado quando o mapa é carregado
     console.log('Mapa carregado, carregando polylines...');
+    this.mapLoaded = true;
     this.loadPolylines();
   }
 
@@ -174,6 +202,12 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   }
 
   private handleSocketData(type: string, data: any): void {
+    // Marca que recebeu dados do socket
+    if (!this.hasReceivedData) {
+      this.hasReceivedData = true;
+      this.checkLoadingComplete();
+    }
+
     switch (type) {
       case 'sync':
         this.handleSync(data);
@@ -384,6 +418,8 @@ export class MapVectorComponent implements OnInit, OnDestroy {
 
         if (!polylines || polylines.length === 0) {
           console.warn('Nenhuma polyline encontrada para as linhas:', lineIds);
+          this.polylinesLoaded = true;
+          this.checkLoadingComplete();
           return;
         }
 
@@ -439,9 +475,15 @@ export class MapVectorComponent implements OnInit, OnDestroy {
         });
 
         console.log('Total de sources/layers adicionados:', this.polylinesSources.length);
-        this.fitMapToBounds();
+        this.polylinesLoaded = true;
+        this.checkLoadingComplete();
+        this.animateCameraTo3DBounds();
       },
-      error: (err) => console.error('Error loading polylines:', err)
+      error: (err) => {
+        console.error('Error loading polylines:', err);
+        this.polylinesLoaded = true;
+        this.checkLoadingComplete();
+      }
     });
   }
 
@@ -535,6 +577,12 @@ export class MapVectorComponent implements OnInit, OnDestroy {
   }
 
   private cleanupResources(): void {
+    // Reset do estado de loading
+    this.isLoading = true;
+    this.hasReceivedData = false;
+    this.polylinesLoaded = false;
+    this.mapLoaded = false;
+    
     // Limpa polylines primeiro
     this.clearPolylines();
     
@@ -562,14 +610,10 @@ export class MapVectorComponent implements OnInit, OnDestroy {
     const mapContainer = document.getElementById('map');
     if (mapContainer) {
       mapContainer.innerHTML = '';
-      mapContainer.className = ''; // Remove classes CSS
+      mapContainer.className = 'w-full h-full z-10 opacity-0'; // Mantém classes básicas
     }
 
-    // Força o reset do estado do mapa
-    this.showMap = false;
-    setTimeout(() => {
-      this.showMap = true;
-    }, 100);
+    console.log('Recursos limpos, pronto para nova inicialização');
   }
 
   onBack(): void {
@@ -706,5 +750,126 @@ export class MapVectorComponent implements OnInit, OnDestroy {
     }
 
     this.busMarkers.set(id, marker);
+  }
+
+  /**
+   * Verifica se o carregamento está completo e remove o loading
+   */
+  private checkLoadingComplete(): void {
+    if (this.hasReceivedData && this.polylinesLoaded && this.mapLoaded) {
+      console.log('Carregamento completo, removendo loading...');
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * Anima a câmera para mostrar todas as polylines com efeito 3D
+   */
+  private animateCameraTo3DBounds(): void {
+    if (!this.map || this.polylinesSources.length === 0) {
+      console.warn('Não é possível animar câmera - map ou polylines não disponíveis');
+      return;
+    }
+
+    console.log('Animando câmera para bounds 3D...');
+    
+    // Cria bounds que inclui todas as polylines
+    const bounds = new maplibregl.LngLatBounds();
+    let coordCount = 0;
+    
+    // Para cada source, obter os dados e expandir os bounds
+    this.polylinesSources.forEach(sourceId => {
+      if (sourceId.startsWith('route-') && !sourceId.includes('layer')) {
+        try {
+          const source = this.map!.getSource(sourceId) as maplibregl.GeoJSONSource;
+          if (source && source._data) {
+            const data = source._data as any;
+            if (data.geometry && data.geometry.coordinates) {
+              data.geometry.coordinates.forEach((coord: [number, number]) => {
+                bounds.extend(coord);
+                coordCount++;
+              });
+            }
+          }
+        } catch (error) {
+          console.warn(`Erro ao processar source ${sourceId}:`, error);
+        }
+      }
+    });
+
+    console.log(`Processadas ${coordCount} coordenadas para animação 3D`);
+
+    if (!bounds.isEmpty()) {
+      try {
+        // Animação direta para a posição final com efeito 3D
+        this.map.fitBounds(bounds, {
+          padding: { top: 80, bottom: 80, left: 80, right: 80 },
+          maxZoom: 15,
+          pitch: 50, // Inclinação 3D
+          bearing: 0, // Sem rotação
+          duration: 2500, // Animação mais longa para efeito suave
+          essential: true,
+          // Curva de easing mais suave
+          easing: (t) => t * (2 - t) // ease-out quad
+        });
+
+        console.log('Animação 3D da câmera iniciada diretamente para o destino');
+      } catch (error) {
+        console.error('Erro ao animar câmera 3D:', error);
+        // Fallback para animação simples
+        this.fitMapToBounds();
+      }
+    } else {
+      console.warn('Bounds está vazio, usando animação padrão');
+      // Animação padrão para Cuiabá com efeito 3D
+      this.map.easeTo({
+        center: [-56.0979, -15.6014],
+        zoom: 12,
+        pitch: 45,
+        bearing: 0,
+        duration: 2000,
+        easing: (t) => t * (2 - t)
+      });
+    }
+  }
+
+  /**
+   * Aguarda o container do mapa estar disponível no DOM
+   */
+  private waitForMapContainer(): Promise<HTMLElement | null> {
+    return new Promise((resolve) => {
+      // Verifica imediatamente se já está disponível
+      const container = document.getElementById('map');
+      if (container) {
+        console.log('Container do mapa encontrado imediatamente');
+        resolve(container);
+        return;
+      }
+      
+      // Se não estiver disponível, aguarda um pouco e tenta novamente
+      let attempts = 0;
+      const maxAttempts = 10; // Reduzido para 1 segundo no máximo
+      
+      const checkContainer = () => {
+        const container = document.getElementById('map');
+        if (container) {
+          console.log('Container do mapa encontrado após', attempts, 'tentativas');
+          resolve(container);
+          return;
+        }
+        
+        attempts++;
+        if (attempts >= maxAttempts) {
+          console.error('Timeout aguardando container do mapa após', attempts, 'tentativas');
+          resolve(null);
+          return;
+        }
+        
+        setTimeout(checkContainer, 100);
+      };
+      
+      // Inicia a verificação após um pequeno delay
+      setTimeout(checkContainer, 100);
+    });
   }
 }

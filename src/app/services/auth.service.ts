@@ -171,37 +171,77 @@ export class AuthService {
       return message;
     }
     
-    // Erros do Firebase Auth
-    switch (error.code) {
-      case 'auth/user-not-found':
+    // Erros do Firebase Auth - verificar tanto code quanto message
+    if (error.code) {
+      switch (error.code) {
+        case 'auth/user-not-found':
+          message = 'Usuário não encontrado';
+          break;
+        case 'auth/wrong-password':
+          message = 'Senha incorreta';
+          break;
+        case 'auth/email-already-in-use':
+          message = 'Este email já possui uma conta. Tente fazer login';
+          break;
+        case 'auth/weak-password':
+          message = 'A senha deve ter pelo menos 6 caracteres';
+          break;
+        case 'auth/invalid-email':
+          message = 'Email inválido';
+          break;
+        case 'auth/user-disabled':
+          message = 'Esta conta foi desativada. Entre em contato com o suporte';
+          break;
+        case 'auth/too-many-requests':
+          message = 'Muitas tentativas. Tente novamente mais tarde';
+          break;
+        case 'auth/network-request-failed':
+          message = 'Erro de conexão. Verifique sua internet';
+          break;
+        case 'auth/popup-closed-by-user':
+          message = 'Login cancelado pelo usuário';
+          break;
+        case 'auth/popup-blocked':
+          message = 'Pop-up bloqueado. Permita pop-ups para este site';
+          break;
+        case 'auth/invalid-credential':
+          message = 'Credenciais inválidas';
+          break;
+        case 'auth/operation-not-allowed':
+          message = 'Método de login não permitido';
+          break;
+        case 'auth/account-exists-with-different-credential':
+          message = 'Já existe uma conta com este email usando outro método de login';
+          break;
+        case 'auth/requires-recent-login':
+          message = 'Esta operação requer login recente. Faça login novamente';
+          break;
+        case 'auth/credential-already-in-use':
+          message = 'Esta credencial já está em uso por outra conta';
+          break;
+        case 'auth/timeout':
+          message = 'Tempo limite excedido. Tente novamente';
+          break;
+        default:
+          message = 'Erro de autenticação';
+      }
+    } else if (error.message) {
+      // Verificar se a mensagem contém um código de erro conhecido
+      if (error.message.includes('auth/user-disabled')) {
+        message = 'Esta conta foi desativada. Entre em contato com o suporte';
+      } else if (error.message.includes('auth/user-not-found')) {
         message = 'Usuário não encontrado';
-        break;
-      case 'auth/wrong-password':
+      } else if (error.message.includes('auth/wrong-password')) {
         message = 'Senha incorreta';
-        break;
-      case 'auth/email-already-in-use':
-        message = 'Este email já possui uma conta. Tente fazer login';
-        break;
-      case 'auth/weak-password':
-        message = 'A senha deve ter pelo menos 6 caracteres';
-        break;
-      case 'auth/invalid-email':
+      } else if (error.message.includes('auth/invalid-email')) {
         message = 'Email inválido';
-        break;
-      case 'auth/too-many-requests':
+      } else if (error.message.includes('auth/too-many-requests')) {
         message = 'Muitas tentativas. Tente novamente mais tarde';
-        break;
-      case 'auth/network-request-failed':
+      } else if (error.message.includes('auth/network-request-failed')) {
         message = 'Erro de conexão. Verifique sua internet';
-        break;
-      case 'auth/popup-closed-by-user':
-        message = 'Login cancelado pelo usuário';
-        break;
-      case 'auth/popup-blocked':
-        message = 'Pop-up bloqueado. Permita pop-ups para este site';
-        break;
-      default:
-        message = error.message || 'Erro de autenticação';
+      } else {
+        message = 'Erro de autenticação';
+      }
     }
     
     return message;

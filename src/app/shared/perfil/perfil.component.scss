@@ -73,14 +73,14 @@ ion-alert {
   max-width: 100vw;
   overflow-x: hidden;
   
+  // Garantir scroll suave
+  -webkit-overflow-scrolling: touch;
+  
   // Para Android - garantir espaçamento adequado
   @supports (padding: max(0px)) {
     padding-top: max(env(safe-area-inset-top), 20px);
     padding-bottom: max(env(safe-area-inset-bottom), 20px);
   }
-  
-  // Garantir scroll suave
-  -webkit-overflow-scrolling: touch;
   
   // Ajustar para diferentes tamanhos de tela
   @media (max-height: 700px) {

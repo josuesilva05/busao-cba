@@ -21,13 +21,26 @@
     <span>Usando dados em cache</span>
   </div>
 
-  <div id="map"
-       *ngIf="showMap"
-       class="w-full h-full z-10">
+  <!-- Loading Screen -->
+  <div *ngIf="isLoading"
+       class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div class="text-center">
+      <ion-spinner name="circular" class="mb-4" color="primary"></ion-spinner>
+      <p class="text-gray-600 dark:text-gray-400 text-lg font-medium">
+        Carregando mapa...
+      </p>
+      <p class="text-gray-500 dark:text-gray-500 text-sm mt-2">
+        <span *ngIf="!lineId">Aguardando parâmetros da linha</span>
+        <span *ngIf="lineId && !hasReceivedData">Conectando ao servidor...</span>
+        <span *ngIf="lineId && hasReceivedData && !polylinesLoaded">Carregando rotas...</span>
+      </p>
+    </div>
   </div>
 
-  <div *ngIf="!showMap"
-       class="flex items-center justify-center h-full">
-    <ion-spinner name="circular"></ion-spinner>
+  <!-- Map Container - sempre presente para evitar problemas de timing -->
+  <div id="map"
+       class="w-full h-full z-10"
+       [class.opacity-0]="isLoading"
+       [class.opacity-100]="!isLoading">
   </div>
 </ion-content>
