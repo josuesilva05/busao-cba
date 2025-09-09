@@ -8,7 +8,6 @@ O Busão CBA é um projeto Ionic feito para a cidade de Cuiabá, com o propósit
   <img src="https://github.com/josuesilva05/busao-cba/blob/main/github/1.jpg" width="170" hspace="4">
   <img src="https://github.com/josuesilva05/busao-cba/blob/main/github/2.jpg" width="170" hspace="4">
   <img src="https://github.com/josuesilva05/busao-cba/blob/main/github/3.jpg" width="170" hspace="4">
-  <img src="https://github.com/josuesilva05/busao-cba/blob/main/github/4.jpg" width="170" hspace="4">
   <img src="https://github.com/josuesilva05/busao-cba/blob/main/github/5.jpg" width="170" hspace="4">
 </p>
 
